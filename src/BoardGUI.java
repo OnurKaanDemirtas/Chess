@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class BoardGUI extends JFrame{
     private JPanel board;
@@ -65,10 +64,13 @@ public class BoardGUI extends JFrame{
                 }else{
                     button.setBackground(Color.BLACK);
                 }
-                if(row==1&&column==0){
-                    Piece blackhorse=new Horse(button,Color.BLACK);
+                if(row==0&&column==1){
+                    Piece whitehorse=new Horse(button,Color.WHITE);
                     button.setText("Horse");
-                    //button.addActionListener(new BoardButtonHandler(new chessmodel(blackhorse,)));
+                    ArrayList<Piece> blackpieces=new ArrayList<>();
+                    ArrayList<Piece> whitepieces=new ArrayList<>();
+                    whitepieces.add(whitehorse);
+                    button.addActionListener(new BoardButtonHandler(new chessmodel(blackpieces,whitepieces,buttonlist,board.getSize()),this));
                 }
                 button.setEnabled(row == 0 || row == 1 || row == 6 || row == 7);
                 board.add(button);

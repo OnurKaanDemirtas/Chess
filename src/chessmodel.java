@@ -32,6 +32,7 @@ public class chessmodel {
         this.board=board;
         this.boarddimension=boarddimension;
     }
+
     public void movePiece(Piece piece,JButton button){
         piece.setButton(button);
         if(piece.getColor().equals(Color.WHITE)){

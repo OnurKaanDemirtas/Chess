@@ -10,19 +10,19 @@ public class Horse extends Piece{
 
     @Override
     public void showmoveableplaces(ArrayList<Piece> friendpieces, ArrayList<JButton> board, Dimension boarddimension) {
+        System.out.println("it is working");
         for(JButton button:board){
             Point locationofbutton=button.getLocation();
-            int denominator=(int)(boarddimension.getWidth()/7);
-            if((Math.abs((locationofbutton.getX()-getLocation().getX()))/denominator==2&&Math.abs((locationofbutton.getY()-getLocation().getY()))/denominator==1)||(Math.abs((locationofbutton.getX()-getLocation().getX()))/denominator==1&&Math.abs((locationofbutton.getY()-getLocation().getY()))/denominator==2)||locationofbutton.equals(getLocation())){
-                if(isthereafriendpiece(friendpieces,locationofbutton)){
+            int denominator=(int)(boarddimension.getWidth()/8);
+            if((Math.abs((locationofbutton.getX()-getLocation().getX()))/denominator==2&&Math.abs((locationofbutton.getY()-getLocation().getY()))/denominator==1)||(Math.abs((locationofbutton.getX()-getLocation().getX()))/denominator==1&&Math.abs((locationofbutton.getY()-getLocation().getY()))/denominator==2)||locationofbutton.equals(getLocation())) {
+                if (isthereafriendpiece(friendpieces, locationofbutton)) {
                     button.setEnabled(true);
                     button.setBackground(Color.RED);
-                }else{
+                } else {
                     button.setEnabled(false);
                 }
-            }else{
-                button.setEnabled(false);
             }
-        }
+
+            }
     }
 }

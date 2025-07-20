@@ -1,10 +1,13 @@
+package Pieces;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-public abstract class Piece implements Move{
+public abstract class Piece{
     private JButton button;
     private Color color;
+    private ArrayList<JButton> movableplaces;
 
     public JButton getButton() {
         return button;
@@ -22,16 +25,15 @@ public abstract class Piece implements Move{
         return color;
     }
 
+    public ArrayList<JButton> getMovableplaces() {
+        return movableplaces;
+    }
+
     public Piece(JButton button,Color color){
         this.button=button;
         this.color=color;
+        this.movableplaces=new ArrayList<>();
     }
-    public boolean isthereafriendpiece(ArrayList<Piece> friendpieces, Point point){
-        for(Piece piece:friendpieces){
-            if(piece.getLocation().equals(point)){
-                return false;
-            }
-        }
-        return true;
-    }
+
+    //public abstract void
 }

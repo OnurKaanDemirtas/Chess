@@ -4,35 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="673978da-cce2-4a00-9229-7a3d89cd441d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Index.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PieceIcons/Black/black bishop.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PieceIcons/Black/black king.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PieceIcons/Black/black knight.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PieceIcons/Black/black pawn.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PieceIcons/Black/black queen.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PieceIcons/Black/black rook.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PieceIcons/White/white bishop.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PieceIcons/White/white king.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PieceIcons/White/white knight.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PieceIcons/White/white pawn.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PieceIcons/White/white queen.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PieceIcons/White/white rook.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Pieces/Bishop.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Pieces/King.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Pieces/Knight.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Pieces/Pawn.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Pieces/Queen.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Pieces/Rook.java" afterDir="false" />
+    <list default="true" id="673978da-cce2-4a00-9229-7a3d89cd441d" name="Changes" comment="feat:&quot;movable places for queen,rook,bishop,knight and pawn implemented.&quot;">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/BoardButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/BoardButtonHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/BoardGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/BoardGUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Horse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Move.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Move.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Piece.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pieces/Piece.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/chessmodel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/chessmodel.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -119,6 +92,30 @@
       <option name="presentableId" value="Default" />
       <updated>1749719870619</updated>
     </task>
+    <task id="LOCAL-00001" summary="feat:&quot;movable places for queen,rook,bishop,knight and pawn implemented.&quot;">
+      <option name="closed" value="true" />
+      <created>1753030650268</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1753030650268</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feat:&quot;movable places for queen,rook,bishop,knight and pawn implemented.&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat:&quot;movable places for queen,rook,bishop,knight and pawn implemented.&quot;" />
   </component>
 </project>

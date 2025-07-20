@@ -62,13 +62,28 @@ public class chessmodel {
     private Piece isthereaenemypiece(Index index,ArrayList<Piece> enemypieces){
         for(Piece piece:enemypieces){
             if(boardbuttons[index.getRow()][index.getColumn()].equals(piece.getButton())){
+                if (piece instanceof King) {
+                    if (piece.getColor().equals(Color.WHITE)) {
+                        attackingpiecestotheWhiteking.add(piece);
+                    } else {
+                        attackingpiecestotheBlackking.add(piece);
+                    }
+                }
+                return piece;
+            }
+        }
+        return null;
+    }
+    private Piece isthereaenemypieceforPawn(Index index,ArrayList<Piece> enemypieces){
+        for(Piece piece:enemypieces){
+            if(boardbuttons[index.getRow()][index.getColumn()].equals(piece.getButton())){
                 return piece;
             }
         }
         return null;
     }
     public void findmovableplaces(ArrayList<Piece> pieces){
-        ArrayList<Piece> enemypieces=new ArrayList<>();
+        ArrayList<Piece> enemypieces;
         if(pieces.equals(whitepieces)){
             enemypieces=blackpieces;
         }else{
@@ -207,7 +222,7 @@ public class chessmodel {
             if(pawn.getHowmanytimesitmoved()==0){
                 for(int i=1;i<=2;i++){
                     Index temporaryindex=new Index(indexofpiece.getRow()-i,indexofpiece.getColumn());
-                    Piece piece=isthereaenemypiece(temporaryindex,enemypieces);
+                    Piece piece=isthereaenemypieceforPawn(temporaryindex,enemypieces);
                     if (isthereafriendpiece(temporaryindex, pieces)) {
                         break;
                     }else if(piece!=null){
@@ -218,7 +233,7 @@ public class chessmodel {
                 }
             }else{
                 Index temporaryindex=new Index(indexofpiece.getRow()-1,indexofpiece.getColumn());
-                Piece piece=isthereaenemypiece(temporaryindex,enemypieces);
+                Piece piece=isthereaenemypieceforPawn(temporaryindex,enemypieces);
                 if(!isthereafriendpiece(temporaryindex,pieces)&&piece==null){
                     pawn.getMovableplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                 }
@@ -226,7 +241,7 @@ public class chessmodel {
             Index[] temporaryindexes={new Index(indexofpiece.getRow()-1,indexofpiece.getColumn()+1),new Index(indexofpiece.getRow()-1,indexofpiece.getColumn()-1)};
             for(int i=0;i<temporaryindexes.length;i++){
                 if(isitintheBoard(temporaryindexes[i])&&!isthereafriendpiece(temporaryindexes[i],pieces)){
-                    Piece piece=isthereaenemypiece(temporaryindexes[i],enemypieces);
+                    Piece piece=isthereaenemypieceforPawn(temporaryindexes[i],enemypieces);
                     if(piece!=null&&!(piece instanceof King)){
                         pawn.getMovableplaces().add(boardbuttons[temporaryindexes[i].getRow()][temporaryindexes[i].getColumn()]);
                     }
@@ -236,7 +251,7 @@ public class chessmodel {
             if(pawn.getHowmanytimesitmoved()==0){
                 for(int i=1;i<=2;i++){
                     Index temporaryindex=new Index(indexofpiece.getRow()+i,indexofpiece.getColumn());
-                    Piece piece=isthereaenemypiece(temporaryindex,enemypieces);
+                    Piece piece=isthereaenemypieceforPawn(temporaryindex,enemypieces);
                     if (isthereafriendpiece(temporaryindex, pieces)) {
                         break;
                     }else if(piece!=null){
@@ -247,7 +262,7 @@ public class chessmodel {
                 }
             }else{
                 Index temporaryindex=new Index(indexofpiece.getRow()+1,indexofpiece.getColumn());
-                Piece piece=isthereaenemypiece(temporaryindex,enemypieces);
+                Piece piece=isthereaenemypieceforPawn(temporaryindex,enemypieces);
                 if(!isthereafriendpiece(temporaryindex,pieces)&&piece==null){
                     pawn.getMovableplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                 }

@@ -8,6 +8,7 @@ public abstract class Piece{
     private JButton button;
     private Color color;
     private ArrayList<JButton> movableplaces;
+    private ArrayList<Piece> supportingPieces = new ArrayList<>();
 
     public JButton getButton() {
         return button;
@@ -19,6 +20,10 @@ public abstract class Piece{
 
     public Point getLocation(){
         return button.getLocation();
+    }
+
+    public ArrayList<Piece> getSupportingPieces() {
+        return supportingPieces;
     }
 
     public Color getColor() {
@@ -34,6 +39,4 @@ public abstract class Piece{
         this.color=color;
         this.movableplaces=new ArrayList<>();
     }
-
-    //public abstract void
 }

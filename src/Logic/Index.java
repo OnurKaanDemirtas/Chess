@@ -1,3 +1,5 @@
+package Logic;
+
 public class Index {
     private int row;
     private int column;

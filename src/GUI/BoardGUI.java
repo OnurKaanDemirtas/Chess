@@ -1,5 +1,8 @@
-import Pieces.*;
+package GUI;
 
+import ButtonHandlers.BoardButtonHandler;
+import Pieces.*;
+import Logic.*;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -123,42 +126,42 @@ public class BoardGUI extends JFrame{
                 }else if((row==0&&column==1)||(row==0&&column==6)){
                     Piece knight =new Knight(button,Color.BLACK);
                     blackpieces.add(knight);
-                    button.setEnabled(true);
+                    button.setEnabled(false);
                     ImageIcon imageIcon=new ImageIcon("src/PieceIcons/Black/black knight.png");
                     button.setIcon(imageIcon);
                     button.setText("");
                 }else if((row==0&&column==2)||(row==0&&column==5)){
                     Piece bishop=new Bishop(button,Color.BLACK);
                     blackpieces.add(bishop);
-                    button.setEnabled(true);
+                    button.setEnabled(false);
                     ImageIcon imageIcon=new ImageIcon("src/PieceIcons/Black/black bishop.png");
                     button.setIcon(imageIcon);
                     button.setText("");
                 }else if((row==0&&column==0)||(row==0&&column==7)){
                     Piece rook=new Rook(button,Color.BLACK);
                     blackpieces.add(rook);
-                    button.setEnabled(true);
+                    button.setEnabled(false);
                     ImageIcon imageIcon=new ImageIcon("src/PieceIcons/Black/black rook.png");
                     button.setIcon(imageIcon);
                     button.setText("");
                 }else if(row==0 && column==3){
                     Piece queen=new Queen(button,Color.BLACK);
                     blackpieces.add(queen);
-                    button.setEnabled(true);
+                    button.setEnabled(false);
                     ImageIcon imageIcon=new ImageIcon("src/PieceIcons/Black/black queen.png");
                     button.setIcon(imageIcon);
                     button.setText("");
                 }else if(row==0 && column==4){
                     Piece king=new King(button,Color.BLACK);
                     blackpieces.add(king);
-                    button.setEnabled(true);
+                    button.setEnabled(false);
                     ImageIcon imageIcon=new ImageIcon("src/PieceIcons/Black/black king.png");
                     button.setIcon(imageIcon);
                     button.setText("");
                 } else if (row==1) {
                     Piece pawn=new Pawn(button,Color.BLACK);
                     blackpieces.add(pawn);
-                    button.setEnabled(true);
+                    button.setEnabled(false);
                     ImageIcon imageIcon=new ImageIcon("src/PieceIcons/Black/black pawn.png");
                     button.setIcon(imageIcon);
                     button.setText("");
@@ -177,9 +180,10 @@ public class BoardGUI extends JFrame{
             }
         }
     }
-    private void addActionListeners(){
+    public void addActionListeners(){
+        BoardButtonHandler boardButtonHandler = new BoardButtonHandler(chessmodel, this);
         for(JButton button:buttonlist){
-            button.addActionListener(new BoardButtonHandler(chessmodel,this));
+            button.addActionListener(boardButtonHandler);
         }
     }
 }

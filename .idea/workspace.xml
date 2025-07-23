@@ -4,20 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="673978da-cce2-4a00-9229-7a3d89cd441d" name="Changes" comment="feat:&quot;attacking pieces for King implemented&quot;">
-      <change afterPath="$PROJECT_DIR$/src/ButtonHandlers/BoardButtonHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ButtonHandlers/PawnPromoteButtonHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/GUI/PawnPromoteGUI.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PieceIcons/CircleIcon.java" afterDir="false" />
+    <list default="true" id="673978da-cce2-4a00-9229-7a3d89cd441d" name="Changes" comment="feat:&quot;moving pieces and circle icons on movable places implemented&quot;">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/BoardButtonHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/BoardGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GUI/BoardGUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Index.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Logic/Index.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Move.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ButtonHandlers/BoardButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ButtonHandlers/BoardButtonHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ButtonHandlers/PawnPromoteButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ButtonHandlers/PawnPromoteButtonHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Logic/Index.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Logic/Index.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Logic/chessmodel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Logic/chessmodel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Pieces/King.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pieces/King.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Pieces/Pawn.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pieces/Pawn.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Pieces/Piece.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pieces/Piece.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Pieces/Rook.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pieces/Rook.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/chessmodel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Logic/chessmodel.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,18 +57,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/onurk/Documents/example&quot;,
-    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/onurk/AppData/Local/Temp/8ee0bc98-94c1-4dde-a3e7-d7fae2f5554d_CS102Project (2).zip.54d/chess/src/Main.java&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "dev",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/onurk/Documents/example",
+    "onboarding.tips.debug.path": "C:/Users/onurk/AppData/Local/Temp/8ee0bc98-94c1-4dde-a3e7-d7fae2f5554d_CS102Project (2).zip.54d/chess/src/Main.java",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\onurk\Documents\Chess\src\PieceIcons\White" />
@@ -119,7 +115,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753031917063</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="feat:&quot;moving pieces and circle icons on movable places implemented&quot;">
+      <option name="closed" value="true" />
+      <created>1753204830856</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1753204830856</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -136,6 +140,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feat:&quot;movable places for queen,rook,bishop,knight and pawn implemented.&quot;" />
     <MESSAGE value="feat:&quot;attacking pieces for King implemented&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat:&quot;attacking pieces for King implemented&quot;" />
+    <MESSAGE value="feat:&quot;moving pieces and circle icons on movable places implemented&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat:&quot;moving pieces and circle icons on movable places implemented&quot;" />
   </component>
 </project>

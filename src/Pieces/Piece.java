@@ -6,9 +6,9 @@ import java.util.ArrayList;
 
 public abstract class Piece{
     private JButton button;
-    private Color color;
-    private ArrayList<JButton> movableplaces;
-    private ArrayList<Piece> supportingPieces = new ArrayList<>();
+    private final Color color;
+    private final ArrayList<JButton> playbleplaces;
+    private final ArrayList<Piece> supportingPieces = new ArrayList<>();
 
     public JButton getButton() {
         return button;
@@ -16,10 +16,6 @@ public abstract class Piece{
 
     public void setButton(JButton button) {
         this.button = button;
-    }
-
-    public Point getLocation(){
-        return button.getLocation();
     }
 
     public ArrayList<Piece> getSupportingPieces() {
@@ -30,13 +26,13 @@ public abstract class Piece{
         return color;
     }
 
-    public ArrayList<JButton> getMovableplaces() {
-        return movableplaces;
+    public ArrayList<JButton> getPlaybleplaces() {
+        return playbleplaces;
     }
 
     public Piece(JButton button,Color color){
         this.button=button;
         this.color=color;
-        this.movableplaces=new ArrayList<>();
+        this.playbleplaces =new ArrayList<>();
     }
 }

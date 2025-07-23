@@ -14,7 +14,6 @@ public class chessmodel {
     private ArrayList<Piece> attackingpiecestotheWhiteking;
     private ArrayList<Piece> attackingpiecestotheBlackking;
 
-
     public chessmodel(ArrayList<Piece> blackpieces,ArrayList<Piece> whitepieces,ArrayList<JButton> boardbuttons){
         this.blackpieces=blackpieces;
         this.whitepieces=whitepieces;
@@ -45,7 +44,9 @@ public class chessmodel {
     private boolean isthereafriendpiece(Index index, ArrayList<Piece> samecolorpieces, Piece selectedpiece){
         for(Piece piece:samecolorpieces){
             if(boardbuttons[index.getRow()][index.getColumn()].equals(piece.getButton())){
-                piece.getSupportingPieces().add(selectedpiece);
+                if(!piece.getSupportingPieces().contains(selectedpiece)){
+                    piece.getSupportingPieces().add(selectedpiece);
+                }
                 return true;
             }
         }
@@ -74,7 +75,7 @@ public class chessmodel {
         }
         return null;
     }
-    private Piece isthereaenemypieceforPawn(Index index, ArrayList<Piece> enemypieces){
+    private Piece isthereaenemypieceforPawnandKing(Index index, ArrayList<Piece> enemypieces){
         for(Piece piece:enemypieces){
             if(boardbuttons[index.getRow()][index.getColumn()].equals(piece.getButton())){
                 return piece;
@@ -82,15 +83,47 @@ public class chessmodel {
         }
         return null;
     }
-    public void findmovableplaces(ArrayList<Piece> pieces){
+    private boolean canKingmovethatindex(King king, ArrayList<Piece> enemypieces, Index indexthatwantingtomove){
+        Piece enemypiece=isthereaenemypiece(indexthatwantingtomove, enemypieces);
+        if(enemypiece!=null){
+            if(!enemypiece.getSupportingPieces().isEmpty()){
+                return false;
+            }
+        }
+        for(Piece piece: enemypieces){
+            if(piece instanceof King){
+                Index indexofking = findIndex(piece.getButton());
+                if(Math.abs(indexthatwantingtomove.getRow() - indexofking.getRow()) <= 1 &&
+                        Math.abs(indexthatwantingtomove.getColumn() - indexofking.getColumn()) <= 1){
+                    return false;
+                }
+            }else if(piece instanceof Pawn) {
+                if (((Pawn) piece).getAttackingplaces().contains(boardbuttons[indexthatwantingtomove.getRow()][indexthatwantingtomove.getColumn()])) {
+                    return false;
+                }
+            }else{
+                if(piece.getPlaybleplaces().contains(boardbuttons[indexthatwantingtomove.getRow()][indexthatwantingtomove.getColumn()])){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void findplayableplaces(ArrayList<Piece> pieces){
         ArrayList<Piece> enemypieces;
         if(pieces.equals(whitepieces)){
             enemypieces=blackpieces;
         }else{
             enemypieces=whitepieces;
         }
+        for(Piece enemy:enemypieces){
+           if(enemy instanceof King ){
+               ((King)enemy).getPiecesthatcheck().clear();
+           }
+        }
         for(Piece piece:pieces){
-            piece.getMovableplaces().clear();
+            piece.getPlaybleplaces().clear();
             if(piece instanceof Knight){
                 Index[] indexesformoves=
                         {new Index(2,1),new Index(2,-1),new Index(-2,1),new Index(-2,-1),
@@ -101,23 +134,28 @@ public class chessmodel {
                     Index temporaryIndex=new Index(indexofPiece.getRow()+ index.getRow(),indexofPiece.getColumn()+ index.getColumn());
                     if(isitintheBoard(temporaryIndex)){
                         if(!isthereafriendpiece(temporaryIndex,pieces,piece)){
-                            piece.getMovableplaces().add(boardbuttons[temporaryIndex.getRow()][temporaryIndex.getColumn()]);
+                            piece.getPlaybleplaces().add(boardbuttons[temporaryIndex.getRow()][temporaryIndex.getColumn()]);
                         }
                     }
                 }
             }else if(piece instanceof Bishop){
-                calculatemovableplacesforBishop(piece,pieces,enemypieces);
+                calculateplaybleplacesforBishop(piece,pieces,enemypieces);
             }else if (piece instanceof Rook){
-                calculatemovableplacesforRook(piece,pieces,enemypieces);
+                calculateplaybleplacesforRook(piece,pieces,enemypieces);
             }else if(piece instanceof Queen){
-                calculatemovableplacesforRook(piece,pieces,enemypieces);
-                calculatemovableplacesforBishop(piece,pieces,enemypieces);
+                calculateplaybleplacesforRook(piece,pieces,enemypieces);
+                calculateplaybleplacesforBishop(piece,pieces,enemypieces);
             }else if(piece instanceof Pawn){
-                calculatemovableplacesforPawn((Pawn)piece,pieces,enemypieces);
+                ((Pawn)piece).getAttackingplaces().clear();
+                calculateplayableplacesforPawn((Pawn)piece,pieces,enemypieces);
+            }else if(piece instanceof King){
+                ((King)piece).getCastableplaces().clear();
+                ((King)piece).getCastablerooks().clear();
+                calculateplaybleplacesforKing((King) piece, pieces, enemypieces);
             }
         }
     }
-    private void calculatemovableplacesforBishop(Piece piece, ArrayList<Piece> pieces, ArrayList<Piece> enemypieces){
+    private void calculateplaybleplacesforBishop(Piece piece, ArrayList<Piece> pieces, ArrayList<Piece> enemypieces){
         Index indexofPiece=findIndex(piece.getButton());
         Index[] indexesforcalculate =
                 {new Index(-1,-1),new Index(-1,1),new Index(1,-1),new Index(1,1)};
@@ -136,17 +174,17 @@ public class chessmodel {
                         if(enemypiece instanceof King){
                             ((King) enemypiece).getPiecesthatcheck().add(piece);
                         }else{
-                            piece.getMovableplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
+                            piece.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                             break;
                         }
                     }else {
-                        piece.getMovableplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
+                        piece.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                     }
                 }
             }
         }
     }
-    private void calculatemovableplacesforRook(Piece piece,ArrayList<Piece> pieces,ArrayList<Piece> enemypieces){
+    private void calculateplaybleplacesforRook(Piece piece, ArrayList<Piece> pieces, ArrayList<Piece> enemypieces){
         Index indexofPiece=findIndex(piece.getButton());
         for(int i=1;i<=indexofPiece.getColumn();i++){//going up
             Index temporaryindex=new Index(indexofPiece.getRow(),indexofPiece.getColumn()-i);
@@ -158,11 +196,11 @@ public class chessmodel {
                 if(enemypiece instanceof King){
                     ((King) enemypiece).getPiecesthatcheck().add(piece);
                 }else{
-                    piece.getMovableplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
+                    piece.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                     break;
                 }
             }else {
-                piece.getMovableplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
+                piece.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
             }
         }
         for(int i=1;i<=indexofPiece.getRow();i++){//going left
@@ -175,11 +213,11 @@ public class chessmodel {
                 if(enemypiece instanceof King){
                     ((King) enemypiece).getPiecesthatcheck().add(piece);
                 }else{
-                    piece.getMovableplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
+                    piece.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                     break;
                 }
             }else {
-                piece.getMovableplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
+                piece.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
             }
         }
         for(int i=1;i<=7-indexofPiece.getColumn();i++){ // going right
@@ -192,11 +230,11 @@ public class chessmodel {
                 if (enemypiece instanceof King) {
                     ((King) enemypiece).getPiecesthatcheck().add(piece);
                 } else {
-                    piece.getMovableplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
+                    piece.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                     break;
                 }
             } else {
-                piece.getMovableplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
+                piece.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
             }
         }
         for(int i=1;i<=7-indexofPiece.getRow();i++){ // going down
@@ -209,42 +247,43 @@ public class chessmodel {
                 if (enemypiece instanceof King) {
                     ((King) enemypiece).getPiecesthatcheck().add(piece);
                 } else {
-                    piece.getMovableplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
+                    piece.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                     break;
                 }
             } else {
-                piece.getMovableplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
+                piece.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
             }
         }
     }
-    private void calculatemovableplacesforPawn(Pawn pawn,ArrayList<Piece> pieces,ArrayList<Piece> enemypieces){
+    private void calculateplayableplacesforPawn(Pawn pawn, ArrayList<Piece> pieces, ArrayList<Piece> enemypieces){
         Index indexofpiece=findIndex(pawn.getButton());
         if(pawn.getColor().equals(Color.WHITE)){
             if(pawn.getHowmanytimesitmoved()==0){
                 for(int i=1;i<=2;i++){
                     Index temporaryindex=new Index(indexofpiece.getRow()-i,indexofpiece.getColumn());
-                    Piece piece=isthereaenemypieceforPawn(temporaryindex,enemypieces);
+                    Piece piece= isthereaenemypieceforPawnandKing(temporaryindex,enemypieces);
                     if (isthereafriendpieceforPawn(temporaryindex, pieces)) {
                         break;
                     }else if(piece!=null){
                         break;
                     }else{
-                        pawn.getMovableplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
+                        pawn.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                     }
                 }
             }else{
                 Index temporaryindex=new Index(indexofpiece.getRow()-1,indexofpiece.getColumn());
-                Piece piece=isthereaenemypieceforPawn(temporaryindex,enemypieces);
+                Piece piece= isthereaenemypieceforPawnandKing(temporaryindex,enemypieces);
                 if(!isthereafriendpieceforPawn(temporaryindex,pieces)&&piece==null){
-                    pawn.getMovableplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
+                    pawn.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                 }
             }
             Index[] temporaryindexes={new Index(indexofpiece.getRow()-1,indexofpiece.getColumn()+1),new Index(indexofpiece.getRow()-1,indexofpiece.getColumn()-1)};
             for(int i=0;i<temporaryindexes.length;i++){
                 if(isitintheBoard(temporaryindexes[i])&&!isthereafriendpiece(temporaryindexes[i],pieces,pawn)){
-                    Piece piece=isthereaenemypieceforPawn(temporaryindexes[i],enemypieces);
+                    pawn.getAttackingplaces().add(boardbuttons[temporaryindexes[i].getRow()][temporaryindexes[i].getColumn()]);
+                    Piece piece= isthereaenemypieceforPawnandKing(temporaryindexes[i],enemypieces);
                     if(piece!=null&&!(piece instanceof King)){
-                        pawn.getMovableplaces().add(boardbuttons[temporaryindexes[i].getRow()][temporaryindexes[i].getColumn()]);
+                        pawn.getPlaybleplaces().add(boardbuttons[temporaryindexes[i].getRow()][temporaryindexes[i].getColumn()]);
                     }
                 }
             }
@@ -252,32 +291,100 @@ public class chessmodel {
             if(pawn.getHowmanytimesitmoved()==0){
                 for(int i=1;i<=2;i++){
                     Index temporaryindex=new Index(indexofpiece.getRow()+i,indexofpiece.getColumn());
-                    Piece piece=isthereaenemypieceforPawn(temporaryindex,enemypieces);
+                    Piece piece= isthereaenemypieceforPawnandKing(temporaryindex,enemypieces);
                     if (isthereafriendpieceforPawn(temporaryindex, pieces)) {
                         break;
                     }else if(piece!=null){
                         break;
                     }else{
-                        pawn.getMovableplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
+                        pawn.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                     }
                 }
             }else{
                 Index temporaryindex=new Index(indexofpiece.getRow()+1,indexofpiece.getColumn());
-                Piece piece=isthereaenemypieceforPawn(temporaryindex,enemypieces);
+                Piece piece= isthereaenemypieceforPawnandKing(temporaryindex,enemypieces);
                 if(!isthereafriendpieceforPawn(temporaryindex,pieces)&&piece==null){
-                    pawn.getMovableplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
+                    pawn.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                 }
             }
             Index[] temporaryindexes={new Index(indexofpiece.getRow()+1,indexofpiece.getColumn()+1),new Index(indexofpiece.getRow()+1,indexofpiece.getColumn()-1)};
             for(int i=0;i<temporaryindexes.length;i++){
                 if(isitintheBoard(temporaryindexes[i])&&!isthereafriendpiece(temporaryindexes[i],pieces,pawn)){
+                    pawn.getAttackingplaces().add(boardbuttons[temporaryindexes[i].getRow()][temporaryindexes[i].getColumn()]);
                     Piece piece=isthereaenemypiece(temporaryindexes[i],enemypieces);
                     if(piece!=null&&!(piece instanceof King)){
-                        pawn.getMovableplaces().add(boardbuttons[temporaryindexes[i].getRow()][temporaryindexes[i].getColumn()]);
+                        pawn.getPlaybleplaces().add(boardbuttons[temporaryindexes[i].getRow()][temporaryindexes[i].getColumn()]);
                     }
                 }
             }
         }
+    }
+    public void calculateplaybleplacesforKing(King king, ArrayList<Piece> pieces, ArrayList<Piece> enemypieces){
+        Index indexofking = findIndex(king.getButton());
+        Index[] indexesforcalculate = {
+                new Index(-1,-1), new Index(-1,0), new Index(-1,1),
+                new Index(0,-1),  new Index(0,1),
+                new Index(1,-1),  new Index(1,0), new Index(1,1)
+        };
+        for(Index index : indexesforcalculate){
+            Index temporaryindex = new Index(indexofking.getRow() + index.getRow(), indexofking.getColumn() + index.getColumn());
+            if(isitintheBoard(temporaryindex) && !isthereafriendpiece(temporaryindex, pieces, king)) {
+                if(canKingmovethatindex(king, enemypieces, temporaryindex)) {
+                    king.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
+                }
+            }
+        }
+        ArrayList<Rook> rooks = new ArrayList<>();
+        for(Piece piece : pieces){
+            if(piece instanceof Rook){
+                rooks.add((Rook) piece);
+            }
+        }
+        if(king.getHowmanytimesitmoved() == 0){
+            if(king.getPiecesthatcheck().isEmpty()){
+                for(Rook rook : rooks){
+                    if(rook.getHowmanytimesitmoved() == 0){
+                        Index indexofrook = findIndex(rook.getButton());
+                        int distancebetweenkingandrook = Math.abs(indexofking.getColumn() - indexofrook.getColumn());
+                        if(canplayerdocastling(distancebetweenkingandrook, indexofking, indexofrook, pieces, enemypieces, king)){
+                            int direction = (indexofrook.getColumn() - indexofking.getColumn()) > 0 ? 1 : -1;
+                            int castlingColumn = indexofking.getColumn() + direction * 2;
+                            king.getPlaybleplaces().add(boardbuttons[indexofking.getRow()][castlingColumn]);
+                            king.getCastableplaces().add(boardbuttons[indexofking.getRow()][castlingColumn]);
+                            king.getCastablerooks().add(rook);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    private boolean canplayerdocastling(int distancebetweenkingandrook, Index indexofking, Index indexofrook, ArrayList<Piece> pieces, ArrayList<Piece> enemypieces, King king){
+        int direction = (indexofrook.getColumn() - indexofking.getColumn()) > 0 ? 1 : -1;
+        for(int a = 1; a < distancebetweenkingandrook; a++){
+            int col = indexofking.getColumn() + direction * a;
+            Index temporaryindex = new Index(indexofking.getRow(), col);
+            if(isthereafriendpiece(temporaryindex, pieces, king)){
+                return false;
+            }
+            Piece enemypiece = isthereaenemypiece(temporaryindex, enemypieces);
+            if(enemypiece != null) {
+                return false;
+            }
+            for(Piece enemy : enemypieces){
+                if(enemy instanceof King){
+                    Index indexofenemyking = findIndex(enemy.getButton());
+                    if(Math.abs(temporaryindex.getRow() - indexofenemyking.getRow()) <= 1 &&
+                            Math.abs(temporaryindex.getColumn() - indexofenemyking.getColumn()) <= 1){
+                        return false;
+                    }
+                }else{
+                    if(enemy.getPlaybleplaces().contains(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()])){
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
     public void move(Piece selectedpiece, JButton clickedbutton){
         Index indexofclickedbutton=findIndex(clickedbutton);
@@ -314,13 +421,36 @@ public class chessmodel {
                     takedblackpieces.add(selectedpiece);
                 }
             }
+        }else if(selectedpiece instanceof King king){
+            king.increasehowmanytimesitmoved();
+            Index indexofking=findIndex(selectedpiece.getButton());
+            for(int i=0;i<king.getCastableplaces().size();i++){
+                if(king.getCastableplaces().get(i).equals(clickedbutton)){
+                    Rook rook=king.getCastablerooks().get(i);
+                    Index indexofrook=findIndex(rook.getButton());
+                    if(indexofrook.getColumn() < indexofking.getColumn()) {
+                        JButton newrookbutton = boardbuttons[indexofking.getRow()][indexofking.getColumn() - 1];
+                        newrookbutton.setIcon(rook.getButton().getIcon());
+                        rook.getButton().setIcon(null);
+                        rook.setButton(newrookbutton);
+                    }else{
+                        JButton newrookbutton = boardbuttons[indexofking.getRow()][indexofking.getColumn() + 1];
+                        newrookbutton.setIcon(rook.getButton().getIcon());
+                        rook.getButton().setIcon(null);
+                        rook.setButton(newrookbutton);
+                    }
+                    rook.increasehowmanytimesitmoved();
+                }
+            }
+        }else if(selectedpiece instanceof Rook){
+            ((Rook)selectedpiece).increasehowmanytimesitmoved();
         }
         clickedbutton.setIcon(selectedpiece.getButton().getIcon());
         selectedpiece.getButton().setIcon(null);
         selectedpiece.getButton().setEnabled(false);
         selectedpiece.setButton(clickedbutton);
         clickedbutton.setEnabled(true);
-        for(JButton button:selectedpiece.getMovableplaces()){
+        for(JButton button:selectedpiece.getPlaybleplaces()){
             button.setEnabled(false);
         }
         for(Piece piece:whitepieces){

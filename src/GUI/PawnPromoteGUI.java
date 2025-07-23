@@ -7,19 +7,21 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class PawnPromoteGUI extends JFrame {
-    private JButton queenButton;
-    private JButton rookButton;
-    private JButton bishopButton;
-    private JButton knightButton;
-    private JButton buttonfornewpiece;
-    private Color colorfornewpiece;
-    private ArrayList<Piece> pieces;
+    private final JButton queenButton;
+    private final JButton rookButton;
+    private final JButton bishopButton;
+    private final JButton knightButton;
+    private final JButton buttonfornewpiece;
+    private final Color colorfornewpiece;
+    private final ArrayList<Piece> pieces;
 
-    public PawnPromoteGUI(JButton buttonfornewpiece,Color colorfornewpiece,ArrayList<Piece> pieces) {
+    public PawnPromoteGUI(JButton buttonfornewpiece,Color colorfornewpiece,ArrayList<Piece> pieces,BoardGUI boardGUI) {
         this.buttonfornewpiece = buttonfornewpiece;
         this.colorfornewpiece = colorfornewpiece;
         this.pieces = pieces;
-        setSize(300,300);
+        setSize(200,100);
+        setLocationRelativeTo(boardGUI.getBoardPanel());
+        setUndecorated(true);
         setLayout(new GridLayout(1, 4));
         ImageIcon queenIcon;
         ImageIcon rookIcon;
@@ -39,12 +41,16 @@ public class PawnPromoteGUI extends JFrame {
 
         queenButton = new JButton();
         queenButton.setIcon(queenIcon);
+        queenButton.setBackground(Color.ORANGE);
         rookButton = new JButton();
         rookButton.setIcon(rookIcon);
+        rookButton.setBackground(Color.ORANGE);
         bishopButton = new JButton();
         bishopButton.setIcon(bishopIcon);
+        bishopButton.setBackground(Color.ORANGE);
         knightButton = new JButton();
         knightButton.setIcon(knightIcon);
+        knightButton.setBackground(Color.ORANGE);
 
         add(queenButton);
         add(rookButton);

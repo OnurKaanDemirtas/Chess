@@ -16,6 +16,8 @@ public class BoardButtonHandler implements ActionListener {
     private ArrayList<Piece> blackpieces;
     private int selectedpieceindex;
     private Color whoseturnisit;
+    private boolean isitcheck;
+    private boolean isitcheckmate;
 
     public BoardButtonHandler(chessmodel model, BoardGUI boardGUI) {
         this.model = model;
@@ -34,15 +36,15 @@ public class BoardButtonHandler implements ActionListener {
             if(index!=-1){
                 if(selectedpieceindex==-1){
                     selectedpieceindex=index;
-                    model.findmovableplaces(whitepieces);
-                    for(JButton b: whitepieces.get(selectedpieceindex).getMovableplaces()){
+                    model.findplayableplaces(whitepieces);
+                    for(JButton b: whitepieces.get(selectedpieceindex).getPlaybleplaces()){
                         b.setEnabled(true);
                         if(!isthereaenemypiece(b, blackpieces)) {
                             b.setIcon(circleIcon);
                         }
                     }
                 }else{
-                    for(JButton b: whitepieces.get(selectedpieceindex).getMovableplaces()){
+                    for(JButton b: whitepieces.get(selectedpieceindex).getPlaybleplaces()){
                         b.setEnabled(false);
                         if(!isthereaenemypiece(b, blackpieces)) {
                             b.setIcon(null);
@@ -52,7 +54,7 @@ public class BoardButtonHandler implements ActionListener {
                         selectedpieceindex=-1;
                     }else{
                         selectedpieceindex=index;
-                        for (JButton b:whitepieces.get(selectedpieceindex).getMovableplaces()) {
+                        for (JButton b:whitepieces.get(selectedpieceindex).getPlaybleplaces()) {
                             b.setEnabled(true);
                             if (!isthereaenemypiece(b, blackpieces)) {
                                 b.setIcon(circleIcon);
@@ -61,7 +63,7 @@ public class BoardButtonHandler implements ActionListener {
                     }
                 }
             }else{
-                for(JButton b: whitepieces.get(selectedpieceindex).getMovableplaces()){
+                for(JButton b: whitepieces.get(selectedpieceindex).getPlaybleplaces()){
                     b.setEnabled(false);
                     if(!isthereaenemypiece(b, blackpieces)){
                         b.setIcon(null);
@@ -76,22 +78,22 @@ public class BoardButtonHandler implements ActionListener {
                 }
                 selectedpieceindex=-1;
                 whoseturnisit = Color.BLACK;
-                model.findmovableplaces(blackpieces);
-                model.findmovableplaces(whitepieces);
+                model.findplayableplaces(blackpieces);
+                model.findplayableplaces(whitepieces);
             }
         }else{
             int index= getClickedPiecesIndexforBlackPieces(button);
             if(index!=-1){
                 if(selectedpieceindex==-1){
                     selectedpieceindex=index;
-                    for(JButton b: blackpieces.get(selectedpieceindex).getMovableplaces()){
+                    for(JButton b: blackpieces.get(selectedpieceindex).getPlaybleplaces()){
                         b.setEnabled(true);
                         if (!isthereaenemypiece(b, whitepieces)) {
                             b.setIcon(circleIcon);
                         }
                     }
                 }else{
-                    for(JButton b: blackpieces.get(selectedpieceindex).getMovableplaces()){
+                    for(JButton b: blackpieces.get(selectedpieceindex).getPlaybleplaces()){
                         b.setEnabled(false);
                         if (!isthereaenemypiece(b, whitepieces)) {
                             b.setIcon(null);
@@ -101,7 +103,7 @@ public class BoardButtonHandler implements ActionListener {
                         selectedpieceindex=-1;
                     }else{
                         selectedpieceindex=index;
-                        for (JButton b:blackpieces.get(selectedpieceindex).getMovableplaces()) {
+                        for (JButton b:blackpieces.get(selectedpieceindex).getPlaybleplaces()) {
                             b.setEnabled(true);
                             if(!isthereaenemypiece(b, whitepieces)) {
                                 b.setIcon(circleIcon);
@@ -110,7 +112,7 @@ public class BoardButtonHandler implements ActionListener {
                     }
                 }
             }else{
-                for(JButton b: blackpieces.get(selectedpieceindex).getMovableplaces()){
+                for(JButton b: blackpieces.get(selectedpieceindex).getPlaybleplaces()){
                     b.setEnabled(false);
                     if(!isthereaenemypiece(b, whitepieces)){
                         b.setIcon(null);
@@ -125,10 +127,10 @@ public class BoardButtonHandler implements ActionListener {
                 }
                 selectedpieceindex=-1;
                 whoseturnisit = Color.WHITE;
-                model.findmovableplaces(blackpieces);
-                model.findmovableplaces(whitepieces);
             }
         }
+        model.findplayableplaces(blackpieces);
+        model.findplayableplaces(whitepieces);
     }
 
     public int getClickedPiecesIndexforWhitePieces(Object object){

@@ -1,8 +1,8 @@
 package Logic;
 
 public class Index {
-    private int row;
-    private int column;
+    private final int row;
+    private final int column;
 
     public int getRow() {
         return row;

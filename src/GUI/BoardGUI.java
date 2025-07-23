@@ -8,24 +8,74 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class BoardGUI extends JFrame{
-    private JPanel board;
-    private JPanel moves;
-    private JPanel info;
+    private JPanel boardPanel;
+    private JPanel movesPanel;
+    private JPanel infoPanel;
     private ArrayList<JButton> buttonlist;
     private ArrayList<Piece> whitepieces;
     private ArrayList<Piece> blackpieces;
     private chessmodel chessmodel;
+    private JLabel takedwhitequeencount;
+    private JLabel takedwhiteknightcount;
+    private JLabel takedwhitebishopcount;
+    private JLabel takedwhiterookcount;
+    private JLabel takedwhitepawncount;
+    private JLabel takedblackqueencount;
+    private JLabel takedblackknightcount;
+    private JLabel takedblackbishopcount;
+    private JLabel takedblackrookcount;
+    private JLabel takedblackpawncount;
 
-    public JPanel getBoard() {
-        return board;
+    public JLabel getTakedwhitequeencount() {
+        return takedwhitequeencount;
     }
 
-    public JPanel getInfo() {
-        return info;
+    public JLabel getTakedwhiteknightcount() {
+        return takedwhiteknightcount;
     }
 
-    public JPanel getMoves() {
-        return moves;
+    public JLabel getTakedwhitebishopcount() {
+        return takedwhitebishopcount;
+    }
+
+    public JLabel getTakedwhiterookcount() {
+        return takedwhiterookcount;
+    }
+
+    public JLabel getTakedwhitepawncount() {
+        return takedwhitepawncount;
+    }
+
+    public JLabel getTakedblackqueencount() {
+        return takedblackqueencount;
+    }
+
+    public JLabel getTakedblackknightcount() {
+        return takedblackknightcount;
+    }
+
+    public JLabel getTakedblackbishopcount() {
+        return takedblackbishopcount;
+    }
+
+    public JLabel getTakedblackrookcount() {
+        return takedblackrookcount;
+    }
+
+    public JLabel getTakedblackpawncount() {
+        return takedblackpawncount;
+    }
+
+    public JPanel getBoardPanel() {
+        return boardPanel;
+    }
+
+    public JPanel getInfoPanel() {
+        return infoPanel;
+    }
+
+    public JPanel getMovesPanel() {
+        return movesPanel;
     }
 
     public ArrayList<Piece> getWhitepieces() {
@@ -36,44 +86,62 @@ public class BoardGUI extends JFrame{
         return blackpieces;
     }
 
-    public ArrayList<JButton> getButtonlist() {
-        return buttonlist;
-    }
-
     public BoardGUI(){
         this.whitepieces=new ArrayList<>();
         this.blackpieces=new ArrayList<>();
-        this.board=initiateBoardPanel();
+        this.boardPanel=initiateBoardPanel();
         addButtonstoBoard();
-        chessmodel=new chessmodel(blackpieces,whitepieces,buttonlist);
+        chessmodel=new chessmodel(blackpieces,whitepieces,buttonlist,this);
         addActionListeners();
-        this.moves=initiateMovesPanel();
-        this.info=initiateInfoPanel();
-        setBounds(200,200,1000,800);
+        this.movesPanel=initiateMovesPanel();
+        this.infoPanel =initiateInfoPanel();
+        setSize(1000,800);
+        setLocationRelativeTo(null);
         setResizable(false);
         setLayout(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        add(board);
-        add(moves);
-        add(info);
+        add(boardPanel);
+        add(movesPanel);
+        add(infoPanel);
         setVisible(true);
     }
     private JPanel initiateBoardPanel(){
         JPanel board=new JPanel();
         board.setLayout(new GridLayout(8,8));
-        board.setBounds(180,60,640,640);
+        board.setBounds(100,60,640,640);
         board.setBackground(Color.GREEN);
         return board;
     }
     private JPanel initiateInfoPanel(){
         JPanel info=new JPanel();
-        info.setBounds(0,0,180,1000);
-        info.setBackground(Color.RED);
+        info.setBounds(0,0,100,1000);
+        info.setLayout(new GridLayout(12,2));
+        info.add(new JLabel(new ImageIcon("src/PieceIcons/White/white queen.png")));
+        info.add(takedwhitequeencount=new JLabel("x0"));
+        info.add(new JLabel(new ImageIcon("src/PieceIcons/White/white rook.png")));
+        info.add(takedwhiterookcount=new JLabel("x0"));
+        info.add(new JLabel(new ImageIcon("src/PieceIcons/White/white bishop.png")));
+        info.add(takedwhitebishopcount=new JLabel("x0"));
+        info.add(new JLabel(new ImageIcon("src/PieceIcons/White/white knight.png")));
+        info.add(takedwhiteknightcount=new JLabel("x0"));
+        info.add(new JLabel(new ImageIcon("src/PieceIcons/White/white pawn.png")));
+        info.add(takedwhitepawncount=new JLabel("x0"));
+        info.add(new JLabel(new ImageIcon("src/PieceIcons/Black/black queen.png")));
+        info.add(takedblackqueencount=new JLabel("x0"));
+        info.add(new JLabel(new ImageIcon("src/PieceIcons/Black/black rook.png")));
+        info.add(takedblackrookcount=new JLabel("x0"));
+        info.add(new JLabel(new ImageIcon("src/PieceIcons/Black/black bishop.png")));
+        info.add(takedblackbishopcount=new JLabel("x0"));
+        info.add(new JLabel(new ImageIcon("src/PieceIcons/Black/black knight.png")));
+        info.add(takedblackknightcount=new JLabel("x0"));
+        info.add(new JLabel(new ImageIcon("src/PieceIcons/Black/black pawn.png")));
+        info.add(takedblackpawncount=new JLabel("x0"));
+        info.setBackground(Color.cyan);
         return info;
     }
     private JPanel initiateMovesPanel(){
         JPanel moves=new JPanel();
-        moves.setBounds(820,0,180,1000);
+        moves.setBounds(740,0,260,1000);
         moves.setBackground(Color.BLUE);
         return moves;
     }
@@ -175,7 +243,7 @@ public class BoardGUI extends JFrame{
                 } else {
                     button.setEnabled(false);
                 }
-                board.add(button);
+                boardPanel.add(button);
                 buttonlist.add(button);
             }
         }

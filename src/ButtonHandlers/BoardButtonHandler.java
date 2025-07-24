@@ -16,8 +16,6 @@ public class BoardButtonHandler implements ActionListener {
     private ArrayList<Piece> blackpieces;
     private int selectedpieceindex;
     private Color whoseturnisit;
-    private boolean isitcheck;
-    private boolean isitcheckmate;
 
     public BoardButtonHandler(chessmodel model, BoardGUI boardGUI) {
         this.model = model;
@@ -78,8 +76,6 @@ public class BoardButtonHandler implements ActionListener {
                 }
                 selectedpieceindex=-1;
                 whoseturnisit = Color.BLACK;
-                model.findplayableplaces(blackpieces);
-                model.findplayableplaces(whitepieces);
             }
         }else{
             int index= getClickedPiecesIndexforBlackPieces(button);
@@ -129,8 +125,6 @@ public class BoardButtonHandler implements ActionListener {
                 whoseturnisit = Color.WHITE;
             }
         }
-        model.findplayableplaces(blackpieces);
-        model.findplayableplaces(whitepieces);
     }
 
     public int getClickedPiecesIndexforWhitePieces(Object object){

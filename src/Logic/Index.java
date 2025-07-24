@@ -1,5 +1,7 @@
 package Logic;
 
+import java.util.Objects;
+
 public class Index {
     private final int row;
     private final int column;

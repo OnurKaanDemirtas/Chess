@@ -9,8 +9,6 @@ import java.util.ArrayList;
 public class chessmodel {
     private final ArrayList<Piece> blackpieces;
     private final  ArrayList<Piece> whitepieces;
-    private final ArrayList<Piece> takedblackpieces;
-    private final ArrayList<Piece> takedwhitepieces;
     private final JButton [][] boardbuttons;
     private final BoardGUI boardGUI;
 
@@ -23,8 +21,6 @@ public class chessmodel {
                 this.boardbuttons[row][column]=boardbuttons.get(row*8+column);
             }
         }
-        this.takedwhitepieces=new ArrayList<>();
-        this.takedblackpieces=new ArrayList<>();
         this.boardGUI=boardGUI;
     }
     public Index findIndex(JButton wantedbutton){
@@ -51,7 +47,7 @@ public class chessmodel {
         }
         return false;
     }
-    private boolean isthereafriendpieceforPawn(Index index, ArrayList<Piece> samecolorpieces){
+    private boolean isthereafriendpieceinthisroad(Index index, ArrayList<Piece> samecolorpieces){
         for(Piece piece:samecolorpieces){
             if(boardbuttons[index.getRow()][index.getColumn()].equals(piece.getButton())){
                 return true;
@@ -64,6 +60,7 @@ public class chessmodel {
             if(boardbuttons[index.getRow()][index.getColumn()].equals(piece.getButton())){
                 if (piece instanceof King king) {
                     king.getPiecesthatcheck().add(piece);
+                    king.getPiecesthatcheck().remove(king);
                 }
                 return piece;
             }
@@ -105,19 +102,20 @@ public class chessmodel {
         return true;
     }
 
-    public void findplayableplaces(ArrayList<Piece> pieces){
+    public void findplayableplaces(ArrayList<Piece> pieces) {
         ArrayList<Piece> enemypieces;
-        if(pieces.equals(whitepieces)){
-            enemypieces=blackpieces;
-        }else{
-            enemypieces=whitepieces;
+        if (pieces.equals(whitepieces)) {
+            enemypieces = blackpieces;
+        } else {
+            enemypieces = whitepieces;
         }
-        for(Piece enemy:enemypieces){
-           if(enemy instanceof King ){
-               ((King)enemy).getPiecesthatcheck().clear();
-           }
+        for (Piece enemy : enemypieces) {
+            if (enemy instanceof King) {
+                ((King) enemy).getPiecesthatcheck().clear();
+                break;
+            }
         }
-        for(Piece piece:pieces){
+        for (Piece piece : pieces) {
             piece.getPlaybleplaces().clear();
             piece.getSupportingPieces().clear();
             switch (piece) {
@@ -144,6 +142,7 @@ public class chessmodel {
                 }
                 case Pawn pawn -> {
                     pawn.getAttackingplaces().clear();
+                    pawn.getEnpassantplaces().clear();
                     calculateplayableplacesforPawn(pawn, pieces, enemypieces);
                 }
                 case King king -> {
@@ -155,40 +154,49 @@ public class chessmodel {
                 }
             }
         }
+    }
+    public void arrangetheplayableplaces(ArrayList<Piece> pieces,ArrayList<Piece> enemypieces,King king) {
         for(Piece piece:pieces){
-            if(piece instanceof King king&& !king.getPiecesthatcheck().isEmpty()){
-                for(Piece enemypiecethatcheck:king.getPiecesthatcheck()){
-                    for(JButton button:enemypiecethatcheck.getPlaybleplaces()){
-                        for(Piece friendpiece:pieces){
-                            if(!friendpiece.getPlaybleplaces().isEmpty()){
-                                for(int i=friendpiece.getPlaybleplaces().size()-1;i>=0;i--){
-                                    if(!friendpiece.getPlaybleplaces().get(i).equals(button)&&!friendpiece.getPlaybleplaces().get(i).equals(enemypiecethatcheck.getButton())){
-                                        friendpiece.getPlaybleplaces().remove(i);
-                                    }
-                                }
-                            }
-                        }
-                    }
+            JButton button = piece.getButton();
+            for(int i=piece.getPlaybleplaces().size()-1;i>=0;i--){
+                JButton playblebutton = piece.getPlaybleplaces().get(i);
+                Piece enemypiece = isthereaenemypiece(findIndex(playblebutton), enemypieces);
+                if(enemypiece != null) {
+                    enemypieces.remove(enemypiece);
+                }
+                piece.setButton(playblebutton);
+                findplayableplaces(enemypieces);
+                if(!king.getPiecesthatcheck().isEmpty()) {
+                    piece.getPlaybleplaces().remove(playblebutton);
+                }
+                piece.setButton(button);
+                if(enemypiece != null) {
+                    enemypieces.add(enemypiece);
                 }
             }
         }
     }
-    public boolean isitcheckmate(ArrayList<Piece> pieces){
+    public int isitcheckmate(ArrayList<Piece> pieces){
         King king = null;
         for(Piece piece : pieces) {
             if(piece instanceof King){
                 king= (King) piece;
             }
         }
-        if (king!=null&&!king.getPiecesthatcheck().isEmpty()) {
+        if (king!=null) {
+            boolean isthereaplayableplace = true;
             for (Piece piece : pieces) {
                 if (!piece.getPlaybleplaces().isEmpty()) {
-                    return false;
+                    isthereaplayableplace=false;
                 }
             }
-            return true;
+            if(isthereaplayableplace&&!king.getPiecesthatcheck().isEmpty()){
+                return 0; // it is checkmate
+            } else if (isthereaplayableplace && king.getPiecesthatcheck().isEmpty()) {
+                return 1; // it is stalemate
+            }
         }
-        return false;
+        return 2;// it is not checkmate or stalemate
     }
     private void calculateplaybleplacesforBishop(Piece piece, ArrayList<Piece> pieces, ArrayList<Piece> enemypieces){
         Index indexofPiece=findIndex(piece.getButton());
@@ -297,7 +305,7 @@ public class chessmodel {
                 for(int i=1;i<=2;i++){
                     Index temporaryindex=new Index(indexofpiece.getRow()-i,indexofpiece.getColumn());
                     Piece piece= isthereaenemypieceforPawnandKing(temporaryindex,enemypieces);
-                    if (isthereafriendpieceforPawn(temporaryindex, pieces)) {
+                    if (isthereafriendpieceinthisroad(temporaryindex, pieces)) {
                         break;
                     }else if(piece!=null){
                         break;
@@ -308,17 +316,26 @@ public class chessmodel {
             }else{
                 Index temporaryindex=new Index(indexofpiece.getRow()-1,indexofpiece.getColumn());
                 Piece piece= isthereaenemypieceforPawnandKing(temporaryindex,enemypieces);
-                if(!isthereafriendpieceforPawn(temporaryindex,pieces)&&piece==null){
+                if(!isthereafriendpieceinthisroad(temporaryindex,pieces)&&piece==null){
                     pawn.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                 }
             }
             Index[] temporaryindexes={new Index(indexofpiece.getRow()-1,indexofpiece.getColumn()+1),new Index(indexofpiece.getRow()-1,indexofpiece.getColumn()-1)};
             for (Index temporaryindex : temporaryindexes) {
                 if (isitintheBoard(temporaryindex) && !isthereafriendpiece(temporaryindex, pieces, pawn)) {
+                    Index indexforenpassant = new Index(temporaryindex.getRow()+1, temporaryindex.getColumn());
+                    Piece pawncandidate = isthereaenemypieceforPawnandKing(indexforenpassant, enemypieces);
+                    Pawn temporarypawn = null;
+                    if(pawncandidate instanceof Pawn){
+                        temporarypawn = (Pawn) pawncandidate;
+                    }
                     pawn.getAttackingplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                     Piece piece = isthereaenemypieceforPawnandKing(temporaryindex, enemypieces);
                     if (piece != null && !(piece instanceof King)) {
                         pawn.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
+                    }else if(temporarypawn!=null&&temporarypawn.getHowmanytimesitmoved()==1&& indexforenpassant.getRow() == 3){
+                        pawn.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
+                        pawn.getEnpassantplaces().add(boardbuttons[indexforenpassant.getRow()][indexforenpassant.getColumn()]);
                     }
                 }
             }
@@ -327,7 +344,7 @@ public class chessmodel {
                 for(int i=1;i<=2;i++){
                     Index temporaryindex=new Index(indexofpiece.getRow()+i,indexofpiece.getColumn());
                     Piece piece= isthereaenemypieceforPawnandKing(temporaryindex,enemypieces);
-                    if (isthereafriendpieceforPawn(temporaryindex, pieces)) {
+                    if (isthereafriendpieceinthisroad(temporaryindex, pieces)) {
                         break;
                     }else if(piece!=null){
                         break;
@@ -338,17 +355,26 @@ public class chessmodel {
             }else{
                 Index temporaryindex=new Index(indexofpiece.getRow()+1,indexofpiece.getColumn());
                 Piece piece= isthereaenemypieceforPawnandKing(temporaryindex,enemypieces);
-                if(!isthereafriendpieceforPawn(temporaryindex,pieces)&&piece==null){
+                if(!isthereafriendpieceinthisroad(temporaryindex,pieces)&&piece==null){
                     pawn.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                 }
             }
             Index[] temporaryindexes={new Index(indexofpiece.getRow()+1,indexofpiece.getColumn()+1),new Index(indexofpiece.getRow()+1,indexofpiece.getColumn()-1)};
             for (Index temporaryindex : temporaryindexes) {
                 if (isitintheBoard(temporaryindex) && !isthereafriendpiece(temporaryindex, pieces, pawn)) {
+                    Index indexforenpassant = new Index(temporaryindex.getRow()-1, temporaryindex.getColumn());
+                    Piece pawncandidate = isthereaenemypieceforPawnandKing(indexforenpassant, enemypieces);
+                    Pawn temporarypawn = null;
+                    if(pawncandidate instanceof Pawn){
+                        temporarypawn = (Pawn) pawncandidate;
+                    }
                     pawn.getAttackingplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                     Piece piece = isthereaenemypiece(temporaryindex, enemypieces);
                     if (piece != null && !(piece instanceof King)) {
                         pawn.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
+                    }else if(temporarypawn!=null&&temporarypawn.getHowmanytimesitmoved()==1&& indexforenpassant.getRow() == 4){
+                        pawn.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
+                        pawn.getEnpassantplaces().add(boardbuttons[indexforenpassant.getRow()][indexforenpassant.getColumn()]);
                     }
                 }
             }
@@ -424,6 +450,26 @@ public class chessmodel {
     public void move(Piece selectedpiece, JButton clickedbutton){
         Index indexofclickedbutton=findIndex(clickedbutton);
         Piece enemypiece;
+        King WhiteKing = null;
+        for(Piece piece:whitepieces){
+            if(piece instanceof King){
+                WhiteKing = (King) piece;
+            }else if(piece instanceof Pawn pawn){
+                if(pawn.getHowmanytimesitmoved()==1){
+                    pawn.increasehowmanytimesitmoved();
+                }
+            }
+        }
+        King BlackKing = null;
+        for(Piece piece:blackpieces){
+            if(piece instanceof King){
+                BlackKing = (King) piece;
+            } else if (piece instanceof Pawn pawn) {
+                if (pawn.getHowmanytimesitmoved() == 1) {
+                    pawn.increasehowmanytimesitmoved();
+                }
+            }
+        }
         if(selectedpiece.getColor().equals(Color.WHITE)){
             enemypiece=isthereaenemypiece(indexofclickedbutton,blackpieces);
         }else{
@@ -431,10 +477,52 @@ public class chessmodel {
         }
         if(enemypiece!=null){
             if(enemypiece.getColor().equals(Color.BLACK)){
-                takedblackpieces.add(enemypiece);
+                String count;
+                if(enemypiece instanceof Queen){
+                    count=boardGUI.getTakedblackqueencount().getText();
+                    String newcount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
+                    boardGUI.getTakedblackqueencount().setText(newcount);
+                } else if (enemypiece instanceof Rook) {
+                    count = boardGUI.getTakedblackrookcount().getText();
+                    String newcount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
+                    boardGUI.getTakedblackrookcount().setText(newcount);
+                } else if (enemypiece instanceof Bishop) {
+                    count = boardGUI.getTakedblackbishopcount().getText();
+                    String newcount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
+                    boardGUI.getTakedblackbishopcount().setText(newcount);
+                } else if (enemypiece instanceof Knight) {
+                    count = boardGUI.getTakedblackknightcount().getText();
+                    String newcount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
+                    boardGUI.getTakedblackknightcount().setText(newcount);
+                } else if (enemypiece instanceof Pawn) {
+                    count = boardGUI.getTakedblackpawncount().getText();
+                    String newcount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
+                    boardGUI.getTakedblackpawncount().setText(newcount);
+                }
                 blackpieces.remove(enemypiece);
             }else{
-                takedwhitepieces.add(enemypiece);
+                String count;
+                if(enemypiece instanceof Queen){
+                    count=boardGUI.getTakedwhitequeencount().getText();
+                    String newcount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
+                    boardGUI.getTakedwhitequeencount().setText(newcount);
+                } else if (enemypiece instanceof Rook) {
+                    count = boardGUI.getTakedwhiterookcount().getText();
+                    String newcount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
+                    boardGUI.getTakedwhiterookcount().setText(newcount);
+                } else if (enemypiece instanceof Bishop) {
+                    count = boardGUI.getTakedwhitebishopcount().getText();
+                    String newcount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
+                    boardGUI.getTakedwhitebishopcount().setText(newcount);
+                } else if (enemypiece instanceof Knight) {
+                    count = boardGUI.getTakedwhiteknightcount().getText();
+                    String newcount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
+                    boardGUI.getTakedwhiteknightcount().setText(newcount);
+                } else if (enemypiece instanceof Pawn) {
+                    count = boardGUI.getTakedwhitepawncount().getText();
+                    String newcount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
+                    boardGUI.getTakedwhitepawncount().setText(newcount);
+                }
                 whitepieces.remove(enemypiece);
             }
             enemypiece.getButton().setIcon(null);
@@ -442,7 +530,31 @@ public class chessmodel {
         }
         switch (selectedpiece) {
             case Pawn pawn -> {
-                pawn.increasehowmanytimesitmoved();
+                Index indexofenpassant = findIndex(clickedbutton);
+                if(selectedpiece.getColor().equals(Color.WHITE)){
+                    indexofenpassant = new Index(indexofenpassant.getRow() + 1, indexofenpassant.getColumn());
+                }else{
+                    indexofenpassant = new Index(indexofenpassant.getRow() - 1, indexofenpassant.getColumn());
+                }
+                if (pawn.getEnpassantplaces().contains(boardbuttons[indexofenpassant.getRow()][indexofenpassant.getColumn()])) {
+                    if(selectedpiece.getColor().equals(Color.WHITE)){
+                        Piece takedpawn = isthereaenemypieceforPawnandKing(indexofenpassant, blackpieces);
+                        takedpawn.getButton().setIcon(null);
+                        takedpawn.setButton(null);
+                        String count = boardGUI.getTakedblackpawncount().getText();
+                        String newcount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
+                        boardGUI.getTakedblackpawncount().setText(newcount);
+                        blackpieces.remove(takedpawn);
+                    }else{
+                        Piece takedpawn = isthereaenemypieceforPawnandKing(indexofenpassant, whitepieces);
+                        takedpawn.getButton().setIcon(null);
+                        takedpawn.setButton(null);
+                        String count = boardGUI.getTakedwhitepawncount().getText();
+                        String newcount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
+                        boardGUI.getTakedwhitepawncount().setText(newcount);
+                        whitepieces.remove(takedpawn);
+                    }
+                }
                 if (indexofclickedbutton.getRow() == 0 || indexofclickedbutton.getRow() == 7) {
                     if (selectedpiece.getColor().equals(Color.WHITE)) {
                         new PawnPromoteGUI(clickedbutton, selectedpiece.getColor(), whitepieces,boardGUI);
@@ -451,12 +563,17 @@ public class chessmodel {
                     }
                     if (selectedpiece.getColor().equals(Color.WHITE)) {
                         whitepieces.remove(selectedpiece);
-                        takedwhitepieces.add(selectedpiece);
-                    } else {
                         blackpieces.remove(selectedpiece);
-                        takedblackpieces.add(selectedpiece);
+                        String count = boardGUI.getTakedwhitepawncount().getText();
+                        String newcount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
+                        boardGUI.getTakedwhitepawncount().setText(newcount);
+                    } else {
+                        String count = boardGUI.getTakedblackpawncount().getText();
+                        String newcount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
+                        boardGUI.getTakedblackpawncount().setText(newcount);
                     }
                 }
+                pawn.increasehowmanytimesitmoved();
             }
             case King king -> {
                 king.increasehowmanytimesitmoved();
@@ -497,16 +614,23 @@ public class chessmodel {
             piece.getButton().setEnabled(false);
         }
         findplayableplaces(whitepieces);
+        arrangetheplayableplaces(whitepieces,blackpieces,WhiteKing);
         findplayableplaces(blackpieces);
+        arrangetheplayableplaces(blackpieces,whitepieces,BlackKing);
         if(selectedpiece.getColor().equals(Color.WHITE)){
-            if(isitcheckmate(blackpieces)) {
+            if(isitcheckmate(blackpieces)==0) {
                 JOptionPane.showMessageDialog(null, "White wins!");
+            }else if(isitcheckmate(blackpieces)==1) {
+                JOptionPane.showMessageDialog(null, "Stalemate!");
             }
         } else {
-            if(isitcheckmate(whitepieces)) {
+            if(isitcheckmate(whitepieces)==0) {
                 JOptionPane.showMessageDialog(null, "Black wins!");
+            } else if (isitcheckmate(whitepieces)==1) {
+                JOptionPane.showMessageDialog(null, "Stalemate!");
             }
         }
+        boardGUI.validate();
     }
 
     private int findsmallerone(Index indexforcompare){

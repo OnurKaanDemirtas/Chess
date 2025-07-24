@@ -95,7 +95,7 @@ public class BoardGUI extends JFrame{
         addActionListeners();
         this.movesPanel=initiateMovesPanel();
         this.infoPanel =initiateInfoPanel();
-        setSize(1000,800);
+        setSize(1000,815);
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(null);
@@ -114,8 +114,8 @@ public class BoardGUI extends JFrame{
     }
     private JPanel initiateInfoPanel(){
         JPanel info=new JPanel();
-        info.setBounds(0,0,100,1000);
-        info.setLayout(new GridLayout(12,2));
+        info.setBounds(0,0,100,800);
+        info.setLayout(new GridLayout(10,2));
         info.add(new JLabel(new ImageIcon("src/PieceIcons/White/white queen.png")));
         info.add(takedwhitequeencount=new JLabel("x0"));
         info.add(new JLabel(new ImageIcon("src/PieceIcons/White/white rook.png")));
@@ -141,7 +141,7 @@ public class BoardGUI extends JFrame{
     }
     private JPanel initiateMovesPanel(){
         JPanel moves=new JPanel();
-        moves.setBounds(740,0,260,1000);
+        moves.setBounds(740,0,260,800);
         moves.setBackground(Color.BLUE);
         return moves;
     }

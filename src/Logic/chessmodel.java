@@ -1,5 +1,6 @@
 package Logic;
 import GUI.BoardGUI;
+import GUI.Move;
 import GUI.PawnPromoteGUI;
 import Pieces.*;
 import javax.swing.*;
@@ -22,6 +23,12 @@ public class chessmodel {
             }
         }
         this.boardGUI=boardGUI;
+        findplayableplaces(whitepieces);
+        for (Piece piece : whitepieces) {
+            if(piece instanceof King king) {
+                arrangetheplayableplaces(whitepieces, blackpieces, king);
+            }
+        }
     }
     public Index findIndex(JButton wantedbutton){
         for(int row=0;row<8;row++){
@@ -78,9 +85,7 @@ public class chessmodel {
     private boolean canKingmovethatindex( ArrayList<Piece> enemypieces, Index indexthatwantingtomove){
         Piece enemypiece=isthereaenemypiece(indexthatwantingtomove, enemypieces);
         if(enemypiece!=null){
-            if(!enemypiece.getSupportingPieces().isEmpty()){
-                return false;
-            }
+            return enemypiece.getSupportingPieces().isEmpty();
         }
         for(Piece piece: enemypieces){
             if(piece instanceof King){
@@ -165,6 +170,7 @@ public class chessmodel {
                     enemypieces.remove(enemypiece);
                 }
                 piece.setButton(playblebutton);
+                king.getPiecesthatcheck().clear();
                 findplayableplaces(enemypieces);
                 if(!king.getPiecesthatcheck().isEmpty()) {
                     piece.getPlaybleplaces().remove(playblebutton);
@@ -449,6 +455,13 @@ public class chessmodel {
     }
     public void move(Piece selectedpiece, JButton clickedbutton){
         Index indexofclickedbutton=findIndex(clickedbutton);
+        Index indexofselectedpiece=findIndex(selectedpiece.getButton());
+        String piecetakingnotation="";
+        String playedsquarenotation=
+                String.valueOf((char) ('a' + indexofclickedbutton.getColumn())) +
+                        (8 - indexofclickedbutton.getRow());
+        String checknotation="";
+        String rooknotation=null;
         Piece enemypiece;
         King WhiteKing = null;
         for(Piece piece:whitepieces){
@@ -525,6 +538,10 @@ public class chessmodel {
                 }
                 whitepieces.remove(enemypiece);
             }
+            if(selectedpiece instanceof Pawn pawn){
+                piecetakingnotation = String.valueOf((char) ('a' + indexofselectedpiece.getColumn())) ;
+            }
+            piecetakingnotation+="x";
             enemypiece.getButton().setIcon(null);
             enemypiece.setButton(null);
         }
@@ -592,6 +609,12 @@ public class chessmodel {
                         rook.getButton().setIcon(null);
                         rook.setButton(newrookbutton);
                         rook.increasehowmanytimesitmoved();
+                        if(Math.abs(indexofrook.getColumn() - indexofking.getColumn()) == 4) {
+                            rooknotation = "O-O-O";
+                        } else {
+                            rooknotation = "O-O";
+                        }
+                        break;
                     }
                 }
             }
@@ -613,24 +636,46 @@ public class chessmodel {
         for (Piece piece:blackpieces){
             piece.getButton().setEnabled(false);
         }
-        findplayableplaces(whitepieces);
-        arrangetheplayableplaces(whitepieces,blackpieces,WhiteKing);
-        findplayableplaces(blackpieces);
-        arrangetheplayableplaces(blackpieces,whitepieces,BlackKing);
         if(selectedpiece.getColor().equals(Color.WHITE)){
+            findplayableplaces(blackpieces);
+            arrangetheplayableplaces(blackpieces,whitepieces,BlackKing);
+            if(BlackKing!=null&&!BlackKing.getPiecesthatcheck().isEmpty()){
+                checknotation="+";
+            }
             if(isitcheckmate(blackpieces)==0) {
                 JOptionPane.showMessageDialog(null, "White wins!");
+                checknotation="#";
             }else if(isitcheckmate(blackpieces)==1) {
                 JOptionPane.showMessageDialog(null, "Stalemate!");
             }
+            Move move;
+            if(rooknotation!=null) {
+                move = new Move(boardGUI, rooknotation);
+            }else {
+                move = new Move(boardGUI, selectedpiece.getPiecetype()+piecetakingnotation+playedsquarenotation+checknotation);
+            }
+            boardGUI.getWhitemovesListModel().addElement(move);
         } else {
+            findplayableplaces(whitepieces);
+            arrangetheplayableplaces(whitepieces,blackpieces,WhiteKing);
+            if(WhiteKing!=null&&!WhiteKing.getPiecesthatcheck().isEmpty()){
+                checknotation="+";
+            }
             if(isitcheckmate(whitepieces)==0) {
                 JOptionPane.showMessageDialog(null, "Black wins!");
+                checknotation="#";
             } else if (isitcheckmate(whitepieces)==1) {
                 JOptionPane.showMessageDialog(null, "Stalemate!");
             }
+            Move move;
+            if(rooknotation!=null) {
+                move = new Move(boardGUI, rooknotation);
+            }else {
+                move = new Move(boardGUI, selectedpiece.getPiecetype()+piecetakingnotation+playedsquarenotation+checknotation);
+            }
+            boardGUI.getBlackmovesListModel().addElement(move);
         }
-        boardGUI.validate();
+        boardGUI.getFrame().validate();
     }
 
     private int findsmallerone(Index indexforcompare){

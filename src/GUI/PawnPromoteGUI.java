@@ -1,6 +1,6 @@
 package GUI;
 
-import ButtonHandlers.PawnPromoteButtonHandler;
+import ActionListeners.PawnPromoteButtonHandler;
 import Pieces.Piece;
 import javax.swing.*;
 import java.awt.*;

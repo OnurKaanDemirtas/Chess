@@ -1,13 +1,15 @@
 package GUI;
 
-import ButtonHandlers.BoardButtonHandler;
+import ActionListeners.BoardButtonHandler;
+import ActionListeners.SelectionListener;
 import Pieces.*;
 import Logic.*;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class BoardGUI extends JFrame{
+public class BoardGUI {
+    private JFrame frame;
     private JPanel boardPanel;
     private JPanel movesPanel;
     private JPanel infoPanel;
@@ -25,6 +27,13 @@ public class BoardGUI extends JFrame{
     private JLabel takedblackbishopcount;
     private JLabel takedblackrookcount;
     private JLabel takedblackpawncount;
+    private DefaultListModel<Move> whitemovesListModel;
+    private DefaultListModel<Move> blackmovesListModel;
+    private JList<Move> whitemovesList;
+    private JList<Move> blackmovesList;
+    private JScrollPane whitemovesScrollPane;
+    private JScrollPane blackmovesScrollPane;
+    private JSplitPane movesSplitPane;
 
     public JLabel getTakedwhitequeencount() {
         return takedwhitequeencount;
@@ -66,6 +75,14 @@ public class BoardGUI extends JFrame{
         return takedblackpawncount;
     }
 
+    public ArrayList<JButton> getButtonlist() {
+        return buttonlist;
+    }
+
+    public JFrame getFrame() {
+        return frame;
+    }
+
     public JPanel getBoardPanel() {
         return boardPanel;
     }
@@ -86,30 +103,64 @@ public class BoardGUI extends JFrame{
         return blackpieces;
     }
 
+    public DefaultListModel<Move> getWhitemovesListModel() {
+        return whitemovesListModel;
+    }
+
+    public DefaultListModel<Move> getBlackmovesListModel() {
+        return blackmovesListModel;
+    }
+
+    public JList<Move> getWhitemovesList() {
+        return whitemovesList;
+    }
+
+    public JList<Move> getBlackmovesList() {
+        return blackmovesList;
+    }
+
+    public void setBoardPanel(JPanel boardPanel) {
+        this.boardPanel = boardPanel;
+    }
+
+    public void setInfoPanel(JPanel infoPanel) {
+        this.infoPanel = infoPanel;
+    }
+
     public BoardGUI(){
+        this.frame=new JFrame("Chess Game");
         this.whitepieces=new ArrayList<>();
         this.blackpieces=new ArrayList<>();
         this.boardPanel=initiateBoardPanel();
+        this.blackmovesListModel = new DefaultListModel<>();
+        this.blackmovesList = new JList<>(blackmovesListModel);
+        this.blackmovesScrollPane = new JScrollPane(blackmovesList);
+        this.whitemovesListModel = new DefaultListModel<>();
+        this.whitemovesList = new JList<>(whitemovesListModel);
+        this.whitemovesScrollPane = new JScrollPane(whitemovesList);
+        this.movesSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, whitemovesScrollPane, blackmovesScrollPane);
         addButtonstoBoard();
         chessmodel=new chessmodel(blackpieces,whitepieces,buttonlist,this);
         addActionListeners();
         this.movesPanel=initiateMovesPanel();
         this.infoPanel =initiateInfoPanel();
-        setSize(1000,815);
-        setLocationRelativeTo(null);
-        setResizable(false);
-        setLayout(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        add(boardPanel);
-        add(movesPanel);
-        add(infoPanel);
-        setVisible(true);
+        SelectionListener selectionListener = new SelectionListener(this);
+        this.whitemovesList.addListSelectionListener(selectionListener);
+        this.blackmovesList.addListSelectionListener(selectionListener);
+        frame.setSize(1000,815);
+        frame.setLocationRelativeTo(null);
+        frame.setResizable(false);
+        frame.setLayout(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.add(boardPanel);
+        frame.add(movesPanel);
+        frame.add(infoPanel);
+        frame.setVisible(true);
     }
     private JPanel initiateBoardPanel(){
         JPanel board=new JPanel();
         board.setLayout(new GridLayout(8,8));
         board.setBounds(100,60,640,640);
-        board.setBackground(Color.GREEN);
         return board;
     }
     private JPanel initiateInfoPanel(){
@@ -142,7 +193,13 @@ public class BoardGUI extends JFrame{
     private JPanel initiateMovesPanel(){
         JPanel moves=new JPanel();
         moves.setBounds(740,0,260,800);
+        moves.setLayout(null);
         moves.setBackground(Color.BLUE);
+        this.movesSplitPane.setBounds(0,250,260,300);
+        this.movesSplitPane.setDividerLocation(128);
+        this.movesSplitPane.setDividerSize(4);
+        this.movesSplitPane.setEnabled(false);
+        moves.add(movesSplitPane);
         return moves;
     }
     private void addButtonstoBoard(){

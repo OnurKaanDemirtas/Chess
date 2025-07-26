@@ -9,6 +9,7 @@ public abstract class Piece{
     private final Color color;
     private final ArrayList<JButton> playbleplaces;
     private final ArrayList<Piece> supportingPieces = new ArrayList<>();
+    private String piecetype;
 
     public JButton getButton() {
         return button;
@@ -30,9 +31,14 @@ public abstract class Piece{
         return playbleplaces;
     }
 
-    public Piece(JButton button,Color color){
+    public String getPiecetype() {
+        return piecetype;
+    }
+
+    public Piece(JButton button, Color color, String piecetype) {
         this.button=button;
         this.color=color;
         this.playbleplaces =new ArrayList<>();
+        this.piecetype = piecetype;
     }
 }

@@ -31,7 +31,7 @@ public class King extends Piece{
     }
 
     public King(JButton button, Color color){
-        super(button,color);
+        super(button,color,"K");
         this.piecesthatcheck=new ArrayList<>();
         this.howmanytimesitmoved = 0;
         this.castableplaces = new ArrayList<>();

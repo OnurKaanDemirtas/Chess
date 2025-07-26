@@ -1,4 +1,4 @@
-package ButtonHandlers;
+package ActionListeners;
 
 import Pieces.*;
 import GUI.*;

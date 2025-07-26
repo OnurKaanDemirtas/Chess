@@ -15,6 +15,6 @@ public class Rook extends Piece{
     }
 
     public Rook(JButton button, Color color){
-        super(button,color);
+        super(button,color,"R");
     }
 }

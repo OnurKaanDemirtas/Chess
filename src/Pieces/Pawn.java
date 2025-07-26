@@ -22,7 +22,7 @@ public class Pawn extends Piece{
     }
 
     public Pawn(JButton button, Color color){
-        super(button,color);
+        super(button,color,"");
         howmanytimesitmoved=0;
         attackingplaces = new ArrayList<>();
         enpassantplaces = new ArrayList<>();

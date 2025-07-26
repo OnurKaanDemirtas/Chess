@@ -1,4 +1,4 @@
-package ButtonHandlers;
+package ActionListeners;
 
 import Logic.*;
 import PieceIcons.CircleIcon;
@@ -34,7 +34,6 @@ public class BoardButtonHandler implements ActionListener {
             if(index!=-1){
                 if(selectedpieceindex==-1){
                     selectedpieceindex=index;
-                    model.findplayableplaces(whitepieces);
                     for(JButton b: whitepieces.get(selectedpieceindex).getPlaybleplaces()){
                         b.setEnabled(true);
                         if(!isthereaenemypiece(b, blackpieces)) {

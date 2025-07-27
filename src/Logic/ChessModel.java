@@ -7,13 +7,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class chessmodel {
+public class ChessModel {
     private final ArrayList<Piece> blackpieces;
     private final  ArrayList<Piece> whitepieces;
     private final JButton [][] boardbuttons;
     private final BoardGUI boardGUI;
 
-    public chessmodel(ArrayList<Piece> blackpieces, ArrayList<Piece> whitepieces, ArrayList<JButton> boardbuttons,BoardGUI boardGUI){
+    public ChessModel(ArrayList<Piece> blackpieces, ArrayList<Piece> whitepieces, ArrayList<JButton> boardbuttons, BoardGUI boardGUI){
         this.blackpieces=blackpieces;
         this.whitepieces=whitepieces;
         this.boardbuttons=new JButton[8][8];
@@ -194,6 +194,7 @@ public class chessmodel {
             for (Piece piece : pieces) {
                 if (!piece.getPlaybleplaces().isEmpty()) {
                     isthereaplayableplace=false;
+                    break;
                 }
             }
             if(isthereaplayableplace&&!king.getPiecesthatcheck().isEmpty()){
@@ -460,6 +461,7 @@ public class chessmodel {
         String playedsquarenotation=
                 String.valueOf((char) ('a' + indexofclickedbutton.getColumn())) +
                         (8 - indexofclickedbutton.getRow());
+        String promotenotation="";
         String checknotation="";
         String rooknotation=null;
         Piece enemypiece;
@@ -574,9 +576,9 @@ public class chessmodel {
                 }
                 if (indexofclickedbutton.getRow() == 0 || indexofclickedbutton.getRow() == 7) {
                     if (selectedpiece.getColor().equals(Color.WHITE)) {
-                        new PawnPromoteGUI(clickedbutton, selectedpiece.getColor(), whitepieces,boardGUI);
+                        new PawnPromoteGUI(boardGUI.getFrame(),clickedbutton, selectedpiece.getColor(), whitepieces,boardGUI);
                     } else {
-                        new PawnPromoteGUI(clickedbutton, selectedpiece.getColor(), blackpieces,boardGUI);
+                        new PawnPromoteGUI(boardGUI.getFrame(),clickedbutton, selectedpiece.getColor(), blackpieces,boardGUI);
                     }
                     if (selectedpiece.getColor().equals(Color.WHITE)) {
                         whitepieces.remove(selectedpiece);
@@ -637,43 +639,94 @@ public class chessmodel {
             piece.getButton().setEnabled(false);
         }
         if(selectedpiece.getColor().equals(Color.WHITE)){
+            boardGUI.getWhitetempo().increaseRemainingtime();
+            int minute=boardGUI.getWhitetempo().getRemainingtime()/60;
+            int second=boardGUI.getWhitetempo().getRemainingtime()-60*minute;
+            String m=minute+"";
+            String s=second+"";
+            if(minute<10){
+                m=0+""+minute;
+            }
+            if(second<10){
+                s=0+""+second;
+            }
+            boardGUI.getWhitetimerlabel().setText(m+":"+s);
+            boardGUI.getWhitetimer().stop();
+            boardGUI.getBlacktimer().start();
+            findplayableplaces(whitepieces);
             findplayableplaces(blackpieces);
             arrangetheplayableplaces(blackpieces,whitepieces,BlackKing);
             if(BlackKing!=null&&!BlackKing.getPiecesthatcheck().isEmpty()){
                 checknotation="+";
             }
             if(isitcheckmate(blackpieces)==0) {
+                for(Piece piece:blackpieces){
+                    piece.getButton().setEnabled(false);
+                    if(piece instanceof King){
+                        piece.getButton().setBackground(Color.red);
+                    }
+                }
+                boardGUI.getBlacktimer().stop();
                 JOptionPane.showMessageDialog(null, "White wins!");
                 checknotation="#";
             }else if(isitcheckmate(blackpieces)==1) {
+                for(Piece piece:blackpieces){
+                    piece.getButton().setEnabled(false);
+                }
+                boardGUI.getBlacktimer().stop();
                 JOptionPane.showMessageDialog(null, "Stalemate!");
             }
             Move move;
             if(rooknotation!=null) {
                 move = new Move(boardGUI, rooknotation);
             }else {
-                move = new Move(boardGUI, selectedpiece.getPiecetype()+piecetakingnotation+playedsquarenotation+checknotation);
+                move = new Move(boardGUI, selectedpiece.getPiecetype()+piecetakingnotation+playedsquarenotation+promotenotation+checknotation);
             }
             boardGUI.getWhitemovesListModel().addElement(move);
+            boardGUI.getWhitemovesList().setSelectedIndex(boardGUI.getWhitemovesListModel().getSize()-1);
         } else {
+            boardGUI.getBlacktempo().increaseRemainingtime();
+            int minute=boardGUI.getBlacktempo().getRemainingtime()/60;
+            int second=boardGUI.getBlacktempo().getRemainingtime()-60*minute;
+            String m=minute+"";
+            String s=second+"";
+            if(minute<10){
+                m=0+""+minute;
+            }
+            if(second<10){
+                s=0+""+second;
+            }
+            boardGUI.getBlacktimerlabel().setText(m+":"+s);
+            boardGUI.getBlacktimer().stop();
+            boardGUI.getWhitetimer().start();
+            findplayableplaces(blackpieces);
             findplayableplaces(whitepieces);
             arrangetheplayableplaces(whitepieces,blackpieces,WhiteKing);
             if(WhiteKing!=null&&!WhiteKing.getPiecesthatcheck().isEmpty()){
                 checknotation="+";
             }
             if(isitcheckmate(whitepieces)==0) {
+                for(Piece piece:whitepieces){
+                    piece.getButton().setEnabled(false);
+                    if(piece instanceof King){
+                        piece.getButton().setBackground(Color.red);
+                    }
+                }
+                boardGUI.getWhitetimer().stop();
                 JOptionPane.showMessageDialog(null, "Black wins!");
                 checknotation="#";
             } else if (isitcheckmate(whitepieces)==1) {
+                boardGUI.getWhitetimer().stop();
                 JOptionPane.showMessageDialog(null, "Stalemate!");
             }
             Move move;
             if(rooknotation!=null) {
                 move = new Move(boardGUI, rooknotation);
             }else {
-                move = new Move(boardGUI, selectedpiece.getPiecetype()+piecetakingnotation+playedsquarenotation+checknotation);
+                move = new Move(boardGUI, selectedpiece.getPiecetype()+piecetakingnotation+playedsquarenotation+promotenotation+checknotation);
             }
             boardGUI.getBlackmovesListModel().addElement(move);
+            boardGUI.getBlackmovesList().setSelectedIndex(boardGUI.getBlackmovesListModel().getSize()-1);
         }
         boardGUI.getFrame().validate();
     }

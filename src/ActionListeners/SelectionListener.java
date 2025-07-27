@@ -2,81 +2,85 @@ package ActionListeners;
 
 import GUI.*;
 
-import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 public class SelectionListener implements ListSelectionListener {
     private final BoardGUI boardGUI;
-    private final HashMap<Move, JFrame> moveFrames = new HashMap<>();
-    private JPanel currentBoardPanel;
-    private JPanel currentInfoPanel;
-    private Move oldWhiteMove;
-    private Move oldBlackMove;
+    private final ArrayList<Move> moves;
+    private Move oldMove;
+    private Move currentMove;
 
     public SelectionListener(BoardGUI boardGUI) {
         this.boardGUI = boardGUI;
-        this.currentBoardPanel =boardGUI.getBoardPanel();
-        this.currentInfoPanel = boardGUI.getInfoPanel();
+        this.moves=new ArrayList<>();
     }
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
-        if(!boardGUI.getBlackmovesList().isSelectionEmpty()) {
-            Move selectedMove = boardGUI.getBlackmovesListModel().getElementAt(boardGUI.getBlackmovesList().getSelectedIndex());
-            if(oldBlackMove != null && !oldBlackMove.equals(selectedMove)) {
-                boardGUI.getFrame().remove(oldBlackMove.getBoardPanel());
-                boardGUI.getFrame().remove(oldBlackMove.getInfoPanel());
-                if(boardGUI.getWhitemovesListModel().getSize()<=boardGUI.getBlackmovesListModel().getSize()&&boardGUI.getBlackmovesList().getSelectedIndex()==boardGUI.getBlackmovesListModel().getSize()-1){
-                    boardGUI.getFrame().add(currentBoardPanel);
-                    boardGUI.getFrame().add(currentInfoPanel);
-                }else{
-                    boardGUI.getFrame().add(selectedMove.getBoardPanel());
-                    boardGUI.getFrame().add(selectedMove.getInfoPanel());
-                }
-            }else if(oldBlackMove==null){
-                boardGUI.getFrame().remove(currentBoardPanel);
-                boardGUI.getFrame().remove(currentInfoPanel);
-                if(boardGUI.getWhitemovesListModel().getSize()<=boardGUI.getBlackmovesListModel().getSize()&&boardGUI.getBlackmovesList().getSelectedIndex()==boardGUI.getBlackmovesListModel().getSize()-1){
-                    boardGUI.getFrame().add(currentBoardPanel);
-                    boardGUI.getFrame().add(currentInfoPanel);
-                }else{
-                    boardGUI.getFrame().add(selectedMove.getBoardPanel());
-                    boardGUI.getFrame().add(selectedMove.getInfoPanel());
-                }
-            }
-            oldBlackMove = selectedMove;
-            boardGUI.getFrame().setVisible(false);
-            boardGUI.getFrame().setVisible(true);
+        if (e.getValueIsAdjusting()) {
+            return;
+        }
+        if (boardGUI.getWhitemovesListModel().getSize() > boardGUI.getBlackmovesListModel().getSize()) {
+            this.currentMove = boardGUI.getWhitemovesListModel().getElementAt(boardGUI.getWhitemovesListModel().getSize() - 1);
+        } else if (boardGUI.getBlackmovesListModel().getSize() >= boardGUI.getWhitemovesListModel().getSize()) {
+            this.currentMove = boardGUI.getBlackmovesListModel().getElementAt(boardGUI.getBlackmovesListModel().getSize() - 1);
+        }
+        Move selectedMove = null;
+        if (e.getSource()==boardGUI.getWhitemovesList()) {
+            boardGUI.getBlackmovesList().removeListSelectionListener(this);
             boardGUI.getBlackmovesList().clearSelection();
-        } else if(!boardGUI.getWhitemovesList().isSelectionEmpty()) {
-            Move selectedMove = boardGUI.getWhitemovesListModel().getElementAt(boardGUI.getWhitemovesList().getSelectedIndex());
-            if(oldWhiteMove != null && !oldWhiteMove.equals(selectedMove)) {
-                boardGUI.getFrame().remove(oldWhiteMove.getBoardPanel());
-                boardGUI.getFrame().remove(oldWhiteMove.getInfoPanel());
-                if(boardGUI.getWhitemovesListModel().getSize()>boardGUI.getBlackmovesListModel().getSize()&&boardGUI.getWhitemovesList().getSelectedIndex()==boardGUI.getWhitemovesListModel().getSize()-1){
-                    boardGUI.getFrame().add(currentBoardPanel);
-                    boardGUI.getFrame().add(currentInfoPanel);
-                }else{
+            boardGUI.getBlackmovesList().addListSelectionListener(this);
+            selectedMove = boardGUI.getWhitemovesList().getSelectedValue();
+        } else if (e.getSource()==boardGUI.getBlackmovesList()) {
+            boardGUI.getWhitemovesList().removeListSelectionListener(this);
+            boardGUI.getWhitemovesList().clearSelection();
+            boardGUI.getWhitemovesList().addListSelectionListener(this);
+            selectedMove = boardGUI.getBlackmovesList().getSelectedValue();
+        }
+        if (selectedMove != null) {
+            if(moves.isEmpty()&&!selectedMove.equals(currentMove)){
+                boardGUI.getFrame().add(selectedMove.getBoardPanel());
+                boardGUI.getFrame().add(selectedMove.getInfoPanel());
+                boardGUI.getBoardPanel().setVisible(false);
+                boardGUI.getInfoPanel().setVisible(false);
+                moves.add(selectedMove);
+                oldMove=selectedMove;
+            }else if(!moves.isEmpty()){
+                if(selectedMove.equals(currentMove)){
+                    boardGUI.getBoardPanel().setVisible(true);
+                    boardGUI.getInfoPanel().setVisible(true);
+                    oldMove.getBoardPanel().setVisible(false);
+                    oldMove.getInfoPanel().setVisible(false);
+                    oldMove=selectedMove;
+                }else if(!moves.contains(selectedMove)){
                     boardGUI.getFrame().add(selectedMove.getBoardPanel());
                     boardGUI.getFrame().add(selectedMove.getInfoPanel());
-                }
-            }else if(oldWhiteMove==null){
-                boardGUI.getFrame().remove(currentBoardPanel);
-                boardGUI.getFrame().remove(currentInfoPanel);
-                if(boardGUI.getWhitemovesListModel().getSize()<=boardGUI.getBlackmovesListModel().getSize()&&boardGUI.getWhitemovesList().getSelectedIndex()==boardGUI.getWhitemovesListModel().getSize()-1){
-                    boardGUI.getFrame().add(currentBoardPanel);
-                    boardGUI.getFrame().add(currentInfoPanel);
+                    selectedMove.getBoardPanel().setVisible(true);
+                    selectedMove.getInfoPanel().setVisible(true);
+                    if(oldMove.equals(currentMove)){
+                        boardGUI.getBoardPanel().setVisible(false);
+                        boardGUI.getInfoPanel().setVisible(false);
+                    }else{
+                        oldMove.getBoardPanel().setVisible(false);
+                        oldMove.getInfoPanel().setVisible(false);
+                    }
+                    moves.add(selectedMove);
+                    oldMove=selectedMove;
                 }else{
-                    boardGUI.getFrame().add(selectedMove.getBoardPanel());
-                    boardGUI.getFrame().add(selectedMove.getInfoPanel());
+                    selectedMove.getInfoPanel().setVisible(true);
+                    selectedMove.getBoardPanel().setVisible(true);
+                    if(oldMove.equals(currentMove)){
+                        boardGUI.getBoardPanel().setVisible(false);
+                        boardGUI.getInfoPanel().setVisible(false);
+                    }else{
+                        oldMove.getBoardPanel().setVisible(false);
+                        oldMove.getInfoPanel().setVisible(false);
+                    }
+                    oldMove=selectedMove;
                 }
             }
-            oldWhiteMove = selectedMove;
-            boardGUI.getFrame().setVisible(false);
-            boardGUI.getFrame().setVisible(true);
-            boardGUI.getWhitemovesList().clearSelection();
         }
     }
 }

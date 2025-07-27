@@ -11,13 +11,13 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class BoardButtonHandler implements ActionListener {
-    private final chessmodel model;
+    private final ChessModel model;
     private ArrayList<Piece> whitepieces;
     private ArrayList<Piece> blackpieces;
     private int selectedpieceindex;
     private Color whoseturnisit;
 
-    public BoardButtonHandler(chessmodel model, BoardGUI boardGUI) {
+    public BoardButtonHandler(ChessModel model, BoardGUI boardGUI) {
         this.model = model;
         this.whitepieces = boardGUI.getWhitepieces();
         this.blackpieces = boardGUI.getBlackpieces();

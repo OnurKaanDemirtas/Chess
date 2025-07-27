@@ -29,11 +29,11 @@ public class PawnPromoteButtonHandler implements ActionListener {
     public void promotePawn(String pieceType) {
         JButton buttonForNewPiece = pawnPromoteGUI.getButtonfornewpiece();
         Color colorForNewPiece = pawnPromoteGUI.getColorfornewpiece();
-
         switch (pieceType) {
             case "Queen":
                 Piece queen=new Queen(buttonForNewPiece, colorForNewPiece);
                 pawnPromoteGUI.getPieces().add(queen);
+                pawnPromoteGUI.setPromotedpiece(queen.getPiecetype());
                 if(colorForNewPiece.equals(Color.WHITE)) {
                     buttonForNewPiece.setIcon(new ImageIcon("src/PieceIcons/White/white queen.png"));
                 }else {
@@ -43,6 +43,7 @@ public class PawnPromoteButtonHandler implements ActionListener {
             case "Bishop":
                 Piece bishop=new Bishop(buttonForNewPiece, colorForNewPiece);
                 pawnPromoteGUI.getPieces().add(bishop);
+                pawnPromoteGUI.setPromotedpiece(bishop.getPiecetype());
                 if (colorForNewPiece.equals(Color.WHITE)) {
                     buttonForNewPiece.setIcon(new ImageIcon("src/PieceIcons/White/white bishop.png"));
                 }else {
@@ -52,6 +53,7 @@ public class PawnPromoteButtonHandler implements ActionListener {
             case "Knight":
                 Piece knight=new Knight(buttonForNewPiece, colorForNewPiece);
                 pawnPromoteGUI.getPieces().add(knight);
+                pawnPromoteGUI.setPromotedpiece(knight.getPiecetype());
                 if (colorForNewPiece.equals(Color.WHITE)) {
                     buttonForNewPiece.setIcon(new ImageIcon("src/PieceIcons/White/white knight.png"));
                 }else{
@@ -59,8 +61,10 @@ public class PawnPromoteButtonHandler implements ActionListener {
                 }
                 break;
             case "Rook":
-                Piece rook=new Rook(buttonForNewPiece, colorForNewPiece);
+                Rook rook=new Rook(buttonForNewPiece, colorForNewPiece);
                 pawnPromoteGUI.getPieces().add(rook);
+                pawnPromoteGUI.setPromotedpiece(rook.getPiecetype());
+                rook.increasehowmanytimesitmoved();
                 if( colorForNewPiece.equals(Color.WHITE)) {
                     buttonForNewPiece.setIcon(new ImageIcon("src/PieceIcons/White/white rook.png"));
                 }else {

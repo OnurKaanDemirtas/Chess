@@ -4,22 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="673978da-cce2-4a00-9229-7a3d89cd441d" name="Changes" comment="feat:&quot;stalemate conditions,enpassant conditions and taked pieces panel implemented&quot;">
-      <change afterPath="$PROJECT_DIR$/src/ActionListeners/SelectionListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/GUI/Move.java" afterDir="false" />
+    <list default="true" id="673978da-cce2-4a00-9229-7a3d89cd441d" name="Changes" comment="feat:&quot;notation of moves implemented and playable places bug fixed&quot;">
+      <change afterPath="$PROJECT_DIR$/src/ActionListeners/SelectTempoListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Logic/Tempo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ButtonHandlers/BoardButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ActionListeners/BoardButtonHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ButtonHandlers/PawnPromoteButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ActionListeners/PawnPromoteButtonHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ActionListeners/BoardButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ActionListeners/BoardButtonHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ActionListeners/PawnPromoteButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ActionListeners/PawnPromoteButtonHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ActionListeners/SelectionListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ActionListeners/SelectionListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/GUI/BoardGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GUI/BoardGUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/GUI/PawnPromoteGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GUI/PawnPromoteGUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Logic/chessmodel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Logic/chessmodel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Pieces/Bishop.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pieces/Bishop.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Pieces/King.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pieces/King.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Pieces/Knight.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pieces/Knight.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Pieces/Pawn.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pieces/Pawn.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Pieces/Piece.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pieces/Piece.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Pieces/Queen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pieces/Queen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Pieces/Rook.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pieces/Rook.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Logic/chessmodel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Logic/ChessModel.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -153,7 +147,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753401040107</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="feat:&quot;notation of moves implemented and playable places bug fixed&quot;">
+      <option name="closed" value="true" />
+      <created>1753546533050</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1753546533050</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -174,6 +176,7 @@
     <MESSAGE value="feat:&quot;king's playable places implemented&quot;" />
     <MESSAGE value="feat:&quot;implemented checkmate conditions&quot;" />
     <MESSAGE value="feat:&quot;stalemate conditions,enpassant conditions and taked pieces panel implemented&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat:&quot;stalemate conditions,enpassant conditions and taked pieces panel implemented&quot;" />
+    <MESSAGE value="feat:&quot;notation of moves implemented and playable places bug fixed&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat:&quot;notation of moves implemented and playable places bug fixed&quot;" />
   </component>
 </project>

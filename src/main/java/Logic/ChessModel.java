@@ -134,6 +134,10 @@ public class ChessModel {
                         Index temporaryIndex = new Index(indexofPiece.getRow() + index.getRow(), indexofPiece.getColumn() + index.getColumn());
                         if (isitintheBoard(temporaryIndex)) {
                             if (!isthereafriendpiece(temporaryIndex, pieces, piece)) {
+                                Piece enemy = isthereaenemypiece(temporaryIndex, enemypieces);
+                                if (enemy instanceof King king) {
+                                    king.getPiecesthatcheck().add(knight);
+                                }
                                 knight.getPlaybleplaces().add(boardbuttons[temporaryIndex.getRow()][temporaryIndex.getColumn()]);
                             }
                         }
@@ -547,6 +551,10 @@ public class ChessModel {
             enemypiece.getButton().setIcon(null);
             enemypiece.setButton(null);
         }
+        clickedbutton.setIcon(selectedpiece.getButton().getIcon());
+        selectedpiece.getButton().setIcon(null);
+        selectedpiece.getButton().setEnabled(false);
+        selectedpiece.setButton(clickedbutton);
         switch (selectedpiece) {
             case Pawn pawn -> {
                 Index indexofenpassant = findIndex(clickedbutton);
@@ -582,11 +590,11 @@ public class ChessModel {
                     }
                     if (selectedpiece.getColor().equals(Color.WHITE)) {
                         whitepieces.remove(selectedpiece);
-                        blackpieces.remove(selectedpiece);
                         String count = boardGUI.getTakedwhitepawncount().getText();
                         String newcount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
                         boardGUI.getTakedwhitepawncount().setText(newcount);
                     } else {
+                        blackpieces.remove(selectedpiece);
                         String count = boardGUI.getTakedblackpawncount().getText();
                         String newcount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
                         boardGUI.getTakedblackpawncount().setText(newcount);
@@ -603,12 +611,13 @@ public class ChessModel {
                         Index indexofrook = findIndex(rook.getButton());
                         JButton newrookbutton;
                         if (indexofrook.getColumn() < indexofking.getColumn()) {
-                            newrookbutton = boardbuttons[indexofking.getRow()][indexofking.getColumn() - 1];
-                        } else {
                             newrookbutton = boardbuttons[indexofking.getRow()][indexofking.getColumn() + 1];
+                        } else {
+                            newrookbutton = boardbuttons[indexofking.getRow()][indexofking.getColumn() - 1];
                         }
                         newrookbutton.setIcon(rook.getButton().getIcon());
                         rook.getButton().setIcon(null);
+                        rook.getButton().setEnabled(false);
                         rook.setButton(newrookbutton);
                         rook.increasehowmanytimesitmoved();
                         if(Math.abs(indexofrook.getColumn() - indexofking.getColumn()) == 4) {
@@ -624,21 +633,13 @@ public class ChessModel {
             default -> {
             }
         }
-        clickedbutton.setIcon(selectedpiece.getButton().getIcon());
-        selectedpiece.getButton().setIcon(null);
-        selectedpiece.getButton().setEnabled(false);
-        selectedpiece.setButton(clickedbutton);
-        clickedbutton.setEnabled(true);
         for(JButton button:selectedpiece.getPlaybleplaces()){
             button.setEnabled(false);
         }
-        for(Piece piece:whitepieces){
-            piece.getButton().setEnabled(false);
-        }
-        for (Piece piece:blackpieces){
-            piece.getButton().setEnabled(false);
-        }
         if(selectedpiece.getColor().equals(Color.WHITE)){
+            for(Piece piece:whitepieces){
+                piece.getButton().setEnabled(false);
+            }
             boardGUI.getWhitetempo().increaseRemainingtime();
             int minute=boardGUI.getWhitetempo().getRemainingtime()/60;
             int second=boardGUI.getWhitetempo().getRemainingtime()-60*minute;
@@ -685,6 +686,9 @@ public class ChessModel {
             boardGUI.getWhitemovesListModel().addElement(move);
             boardGUI.getWhitemovesList().setSelectedIndex(boardGUI.getWhitemovesListModel().getSize()-1);
         } else {
+            for (Piece piece:blackpieces){
+                piece.getButton().setEnabled(false);
+            }
             boardGUI.getBlacktempo().increaseRemainingtime();
             int minute=boardGUI.getBlacktempo().getRemainingtime()/60;
             int second=boardGUI.getBlacktempo().getRemainingtime()-60*minute;

@@ -65,18 +65,6 @@ public class ChessModel {
     private Piece isthereaenemypiece(Index index, ArrayList<Piece> enemypieces){
         for(Piece piece:enemypieces){
             if(boardbuttons[index.getRow()][index.getColumn()].equals(piece.getButton())){
-                if (piece instanceof King king) {
-                    king.getPiecesthatcheck().add(piece);
-                    king.getPiecesthatcheck().remove(king);
-                }
-                return piece;
-            }
-        }
-        return null;
-    }
-    private Piece isthereaenemypieceforPawnandKing(Index index, ArrayList<Piece> enemypieces){
-        for(Piece piece:enemypieces){
-            if(boardbuttons[index.getRow()][index.getColumn()].equals(piece.getButton())){
                 return piece;
             }
         }
@@ -315,7 +303,7 @@ public class ChessModel {
             if(pawn.getHowmanytimesitmoved()==0){
                 for(int i=1;i<=2;i++){
                     Index temporaryindex=new Index(indexofpiece.getRow()-i,indexofpiece.getColumn());
-                    Piece piece= isthereaenemypieceforPawnandKing(temporaryindex,enemypieces);
+                    Piece piece= isthereaenemypiece(temporaryindex,enemypieces);
                     if (isthereafriendpieceinthisroad(temporaryindex, pieces)) {
                         break;
                     }else if(piece!=null){
@@ -326,7 +314,7 @@ public class ChessModel {
                 }
             }else{
                 Index temporaryindex=new Index(indexofpiece.getRow()-1,indexofpiece.getColumn());
-                Piece piece= isthereaenemypieceforPawnandKing(temporaryindex,enemypieces);
+                Piece piece= isthereaenemypiece(temporaryindex,enemypieces);
                 if(!isthereafriendpieceinthisroad(temporaryindex,pieces)&&piece==null){
                     pawn.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                 }
@@ -335,13 +323,17 @@ public class ChessModel {
             for (Index temporaryindex : temporaryindexes) {
                 if (isitintheBoard(temporaryindex) && !isthereafriendpiece(temporaryindex, pieces, pawn)) {
                     Index indexforenpassant = new Index(temporaryindex.getRow()+1, temporaryindex.getColumn());
-                    Piece pawncandidate = isthereaenemypieceforPawnandKing(indexforenpassant, enemypieces);
+                    Piece pawncandidate = isthereaenemypiece(indexforenpassant, enemypieces);
                     Pawn temporarypawn = null;
                     if(pawncandidate instanceof Pawn){
                         temporarypawn = (Pawn) pawncandidate;
                     }
+                    Piece kingcandidate=isthereaenemypiece(temporaryindex, enemypieces);
+                    if(kingcandidate instanceof King){
+                        ((King) kingcandidate).getPiecesthatcheck().add(pawn);
+                    }
                     pawn.getAttackingplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
-                    Piece piece = isthereaenemypieceforPawnandKing(temporaryindex, enemypieces);
+                    Piece piece = isthereaenemypiece(temporaryindex, enemypieces);
                     if (piece != null && !(piece instanceof King)) {
                         pawn.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                     }else if(temporarypawn!=null&&temporarypawn.getHowmanytimesitmoved()==1&& indexforenpassant.getRow() == 3){
@@ -354,7 +346,7 @@ public class ChessModel {
             if(pawn.getHowmanytimesitmoved()==0){
                 for(int i=1;i<=2;i++){
                     Index temporaryindex=new Index(indexofpiece.getRow()+i,indexofpiece.getColumn());
-                    Piece piece= isthereaenemypieceforPawnandKing(temporaryindex,enemypieces);
+                    Piece piece= isthereaenemypiece(temporaryindex,enemypieces);
                     if (isthereafriendpieceinthisroad(temporaryindex, pieces)) {
                         break;
                     }else if(piece!=null){
@@ -365,7 +357,7 @@ public class ChessModel {
                 }
             }else{
                 Index temporaryindex=new Index(indexofpiece.getRow()+1,indexofpiece.getColumn());
-                Piece piece= isthereaenemypieceforPawnandKing(temporaryindex,enemypieces);
+                Piece piece= isthereaenemypiece(temporaryindex,enemypieces);
                 if(!isthereafriendpieceinthisroad(temporaryindex,pieces)&&piece==null){
                     pawn.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                 }
@@ -374,7 +366,7 @@ public class ChessModel {
             for (Index temporaryindex : temporaryindexes) {
                 if (isitintheBoard(temporaryindex) && !isthereafriendpiece(temporaryindex, pieces, pawn)) {
                     Index indexforenpassant = new Index(temporaryindex.getRow()-1, temporaryindex.getColumn());
-                    Piece pawncandidate = isthereaenemypieceforPawnandKing(indexforenpassant, enemypieces);
+                    Piece pawncandidate = isthereaenemypiece(indexforenpassant, enemypieces);
                     Pawn temporarypawn = null;
                     if(pawncandidate instanceof Pawn){
                         temporarypawn = (Pawn) pawncandidate;
@@ -565,7 +557,7 @@ public class ChessModel {
                 }
                 if (pawn.getEnpassantplaces().contains(boardbuttons[indexofenpassant.getRow()][indexofenpassant.getColumn()])) {
                     if(selectedpiece.getColor().equals(Color.WHITE)){
-                        Piece takedpawn = isthereaenemypieceforPawnandKing(indexofenpassant, blackpieces);
+                        Piece takedpawn = isthereaenemypiece(indexofenpassant, blackpieces);
                         takedpawn.getButton().setIcon(null);
                         takedpawn.setButton(null);
                         String count = boardGUI.getTakedblackpawncount().getText();
@@ -573,7 +565,7 @@ public class ChessModel {
                         boardGUI.getTakedblackpawncount().setText(newcount);
                         blackpieces.remove(takedpawn);
                     }else{
-                        Piece takedpawn = isthereaenemypieceforPawnandKing(indexofenpassant, whitepieces);
+                        Piece takedpawn = isthereaenemypiece(indexofenpassant, whitepieces);
                         takedpawn.getButton().setIcon(null);
                         takedpawn.setButton(null);
                         String count = boardGUI.getTakedwhitepawncount().getText();

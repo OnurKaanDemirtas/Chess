@@ -28,7 +28,7 @@ public class CreateNewAccountGUI extends JDialog {
         return database;
     }
 
-    public CreateNewAccountGUI(RegisterGUI parent) {
+    public CreateNewAccountGUI(LogInGUI parent) {
         super(parent, true);
         this.database = parent.getDatabase();
         setSize(300, 200);

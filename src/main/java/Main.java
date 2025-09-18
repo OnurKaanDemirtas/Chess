@@ -1,12 +1,11 @@
-import GUI.BoardGUI;
-import GUI.RegisterGUI;
+import GUI.LogInGUI;
 import Online.FireBaseConnection;
 
 public class Main {
     public static void main(String[] args){
         FireBaseConnection fireBaseConnection=new FireBaseConnection();
-        RegisterGUI registerGUI=new RegisterGUI(fireBaseConnection.getDatabase());
+        LogInGUI registerGUI=new LogInGUI(fireBaseConnection.getDatabase());
         registerGUI.addActionListeners(new ActionListeners.RegisterButtonHandler(registerGUI));
-        new BoardGUI(fireBaseConnection.getDatabase());
+        //new BoardGUI(fireBaseConnection.getDatabase());
     }
 }

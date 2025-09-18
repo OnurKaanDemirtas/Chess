@@ -38,15 +38,15 @@ public class PawnPromoteGUI extends JDialog {
         ImageIcon bishopIcon;
         ImageIcon knightIcon;
         if(colorfornewpiece.equals(Color.WHITE)){
-            queenIcon = new ImageIcon("src/PieceIcons/White/white queen.png");
-            rookIcon = new ImageIcon("src/PieceIcons/White/white rook.png");
-            bishopIcon = new ImageIcon("src/PieceIcons/White/white bishop.png");
-            knightIcon = new ImageIcon("src/PieceIcons/White/white knight.png");
+            queenIcon = new ImageIcon("src/main/java/PieceIcons/White/white queen.png");
+            rookIcon = new ImageIcon("src/main/java/PieceIcons/White/white rook.png");
+            bishopIcon = new ImageIcon("src/main/java/PieceIcons/White/white bishop.png");
+            knightIcon = new ImageIcon("src/main/java/PieceIcons/White/white knight.png");
         }else{
-            queenIcon = new ImageIcon("src/PieceIcons/Black/black queen.png");
-            rookIcon = new ImageIcon("src/PieceIcons/Black/black rook.png");
-            bishopIcon = new ImageIcon("src/PieceIcons/Black/black bishop.png");
-            knightIcon = new ImageIcon("src/PieceIcons/Black/black knight.png");
+            queenIcon = new ImageIcon("src/main/java/PieceIcons/Black/black queen.png");
+            rookIcon = new ImageIcon("src/main/java/PieceIcons/Black/black rook.png");
+            bishopIcon = new ImageIcon("src/main/java/PieceIcons/Black/black bishop.png");
+            knightIcon = new ImageIcon("src/main/java/PieceIcons/Black/black knight.png");
         }
 
         queenButton = new JButton();

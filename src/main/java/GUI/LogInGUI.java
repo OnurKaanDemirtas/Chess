@@ -6,10 +6,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-public class RegisterGUI extends JFrame {
+public class LogInGUI extends JFrame {
     private Firestore database;
     private JButton createNewAccountButton;
-    private JButton registerButton;
+    private JButton logInButton;
     private JTextField usernameTextField;
     private JTextField passwordTextField;
 
@@ -21,8 +21,8 @@ public class RegisterGUI extends JFrame {
         return createNewAccountButton;
     }
 
-    public JButton getRegisterButton() {
-        return registerButton;
+    public JButton getLogInButton() {
+        return logInButton;
     }
 
     public JTextField getUsernameTextField() {
@@ -33,7 +33,7 @@ public class RegisterGUI extends JFrame {
         return passwordTextField;
     }
 
-    public RegisterGUI(Firestore database){
+    public LogInGUI(Firestore database){
         this.database=database;
         setSize(400,400);
         setLayout(null);
@@ -44,14 +44,14 @@ public class RegisterGUI extends JFrame {
         registerPanel.setBounds(20,20,360,180);
         this.usernameTextField=new JTextField();
         this.passwordTextField=new JTextField();
-        this.registerButton=new JButton("Register");
+        this.logInButton =new JButton("Log in");
         this.createNewAccountButton=new JButton("Create New Account");
         registerPanel.add(new JLabel("Username:"));
         registerPanel.add(usernameTextField);
         registerPanel.add(new JLabel("Password:"));
         registerPanel.add(passwordTextField);
-        registerButton.setBounds(20,190,360,85);
-        add(registerButton);
+        logInButton.setBounds(20,190,360,85);
+        add(logInButton);
         createNewAccountButton.setBounds(20,285,360,85);
         add(createNewAccountButton);
         add(registerPanel);
@@ -59,7 +59,7 @@ public class RegisterGUI extends JFrame {
         setVisible(true);
     }
     public void addActionListeners(ActionListener actionListener){
-        this.registerButton.addActionListener(actionListener);
+        this.logInButton.addActionListener(actionListener);
         this.createNewAccountButton.addActionListener(actionListener);
     }
 }

@@ -4,9 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="673978da-cce2-4a00-9229-7a3d89cd441d" name="Changes" comment="feat:&quot;project structure changed to maven,database implemented,account and game implemented,adding account implemented&quot;">
+    <list default="true" id="673978da-cce2-4a00-9229-7a3d89cd441d" name="Changes" comment="feat:&quot;checking with pawn implemented,ChessModel class has been further streamlined&quot;">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Logic/ChessModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Logic/ChessModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ActionListeners/PawnPromoteButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ActionListeners/PawnPromoteButtonHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ActionListeners/RegisterButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ActionListeners/RegisterButtonHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ActionListeners/SelectTempoListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ActionListeners/SelectTempoListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/GUI/BoardGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI/BoardGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/GUI/CreateNewAccountGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI/CreateNewAccountGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/GUI/MainPageGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI/MainPageGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/GUI/Move.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI/Move.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/GUI/PawnPromoteGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI/PawnPromoteGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/GUI/RegisterGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI/LogInGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Online/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Online/Game.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -166,7 +176,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756217627928</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="feat:&quot;checking with pawn implemented,ChessModel class has been further streamlined&quot;">
+      <option name="closed" value="true" />
+      <created>1756246986076</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1756246986076</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -189,6 +207,7 @@
     <MESSAGE value="feat:&quot;stalemate conditions,enpassant conditions and taked pieces panel implemented&quot;" />
     <MESSAGE value="feat:&quot;notation of moves implemented and playable places bug fixed&quot;" />
     <MESSAGE value="feat:&quot;project structure changed to maven,database implemented,account and game implemented,adding account implemented&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat:&quot;project structure changed to maven,database implemented,account and game implemented,adding account implemented&quot;" />
+    <MESSAGE value="feat:&quot;checking with pawn implemented,ChessModel class has been further streamlined&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat:&quot;checking with pawn implemented,ChessModel class has been further streamlined&quot;" />
   </component>
 </project>

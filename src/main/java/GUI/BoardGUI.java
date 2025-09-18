@@ -189,8 +189,6 @@ public class BoardGUI {
         frame.add(movesPanel);
         frame.add(infoPanel);
         frame.setVisible(true);
-        selecttimer();
-        whitetimer.start();
     }
     private JPanel initiateBoardPanel(){
         JPanel board=new JPanel();
@@ -237,7 +235,7 @@ public class BoardGUI {
         moves.add(movesSplitPane);
         return moves;
     }
-    private void selecttimer(){
+    public void selecttimer(){
         this.whitetimerlabel=new JLabel();
         whitetimerlabel.setBounds(50,650,210,100);
         whitetimerlabel.setFont(new Font("Consolas",Font.BOLD,48));
@@ -246,7 +244,7 @@ public class BoardGUI {
         blacktimerlabel.setBounds(50,100,210,100);
         blacktimerlabel.setFont(new Font("Consolas",Font.BOLD,48));
         this.movesPanel.add(blacktimerlabel);
-        JDialog selecttempo=new JDialog(getFrame(),true);
+        /*JDialog selecttempo=new JDialog(getFrame(),true);
         selecttempo.setUndecorated(true);
         selecttempo.setSize(300,200);
         selecttempo.setLocationRelativeTo(getFrame());
@@ -264,7 +262,7 @@ public class BoardGUI {
         selecttempo.add(threeplustwo);
         selecttempo.add(fiveplusthree);
         selecttempo.add(tenpluszero);
-        selecttempo.setVisible(true);
+        selecttempo.setVisible(true);*/
         this.whitetimer=new Timer(1000,e->{
             whitetempo.decreaseRemainingtime(1);
             int minute=whitetempo.getRemainingtime()/60;
@@ -320,6 +318,7 @@ public class BoardGUI {
         }
         blacktimerlabel.setText(m+":"+'0'+'0');
         whitetimerlabel.setText(m+":"+'0'+'0');
+        whitetimer.start();
     }
     private void addButtonstoBoard(){
         this.buttonlist=new ArrayList<>();

@@ -10,12 +10,17 @@ public class Game {
     public Firestore getDatabase() {
         return database;
     }
+
     public BoardGUI getBoardGUI() {
         return boardGUI;
     }
 
     public void setBoardGUI(BoardGUI boardGUI) {
         this.boardGUI = boardGUI;
+    }
+
+    public void setDatabase(Firestore database) {
+        this.database = database;
     }
 
     public Game(Firestore database){

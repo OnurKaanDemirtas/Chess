@@ -42,222 +42,83 @@ public class BoardGUI {
     private Tempo blacktempo;
     private Color coloroftheplayer;
 
-    public Color getColoroftheplayer() {
-        return coloroftheplayer;
-    }
-
-    public void setColoroftheplayer(Color coloroftheplayer) {
-        this.coloroftheplayer = coloroftheplayer;
-    }
-
     public JLabel getBlacktimerlabel() {
         return blacktimerlabel;
     }
-
-    public void setBlacktimerlabel(JLabel blacktimerlabel) {
-        this.blacktimerlabel = blacktimerlabel;
-    }
-
     public JLabel getWhitetimerlabel() {
         return whitetimerlabel;
     }
-
-    public void setWhitetimerlabel(JLabel whitetimerlabel) {
-        this.whitetimerlabel = whitetimerlabel;
-    }
-
     public Tempo getBlacktempo() {
         return blacktempo;
     }
-
-    public void setBlacktempo(Tempo blacktempo) {
-        this.blacktempo = blacktempo;
-    }
-
     public Tempo getWhitetempo() {
         return whitetempo;
     }
-
-    public void setWhitetempo(Tempo whitetempo) {
-        this.whitetempo = whitetempo;
-    }
-
     public Timer getWhitetimer() {
         return whitetimer;
     }
-
-    public void setWhitetimer(Timer whitetimer) {
-        this.whitetimer = whitetimer;
-    }
-
     public Timer getBlacktimer() {
         return blacktimer;
     }
-
-    public void setBlacktimer(Timer blacktimer) {
-        this.blacktimer = blacktimer;
-    }
-
     public JList<Move> getWhitemovesList() {
         return whitemovesList;
     }
-
-    public void setWhitemovesList(JList<Move> whitemovesList) {
-        this.whitemovesList = whitemovesList;
-    }
-
     public DefaultListModel<Move> getWhitemovesListModel() {
         return whitemovesListModel;
     }
-
-    public void setWhitemovesListModel(DefaultListModel<Move> whitemovesListModel) {
-        this.whitemovesListModel = whitemovesListModel;
-    }
-
     public JPanel getInfoPanel() {
         return infoPanel;
     }
-
-    public void setInfoPanel(JPanel infoPanel) {
-        this.infoPanel = infoPanel;
-    }
-
     public JPanel getBoardPanel() {
         return boardPanel;
     }
-
-    public void setBoardPanel(JPanel boardPanel) {
-        this.boardPanel = boardPanel;
-    }
-
     public JFrame getFrame() {
         return frame;
     }
-
-    public void setFrame(JFrame frame) {
-        this.frame = frame;
-    }
-
     public ArrayList<JButton> getButtonlist() {
         return buttonlist;
     }
-
-    public void setButtonlist(ArrayList<JButton> buttonlist) {
-        this.buttonlist = buttonlist;
-    }
-
     public JLabel getTakedwhitequeencount() {
         return takedwhitequeencount;
     }
-
-    public void setTakedwhitequeencount(JLabel takedwhitequeencount) {
-        this.takedwhitequeencount = takedwhitequeencount;
-    }
-
     public JLabel getTakedwhiteknightcount() {
         return takedwhiteknightcount;
-    }
-    public void setTakedwhiteknightcount(JLabel takedwhiteknightcount) {
-        this.takedwhiteknightcount = takedwhiteknightcount;
     }
     public JLabel getTakedwhitebishopcount() {
         return takedwhitebishopcount;
     }
-    public void setTakedwhitebishopcount(JLabel takedwhitebishopcount) {
-        this.takedwhitebishopcount = takedwhitebishopcount;
-    }
     public JLabel getTakedwhiterookcount() {
         return takedwhiterookcount;
-    }
-    public void setTakedwhiterookcount(JLabel takedwhiterookcount) {
-        this.takedwhiterookcount = takedwhiterookcount;
     }
     public JLabel getTakedwhitepawncount() {
         return takedwhitepawncount;
     }
-    public void setTakedwhitepawncount(JLabel takedwhitepawncount) {
-        this.takedwhitepawncount = takedwhitepawncount;
-    }
     public JLabel getTakedblackqueencount() {
         return takedblackqueencount;
-    }
-    public void setTakedblackqueencount(JLabel takedblackqueencount) {
-        this.takedblackqueencount = takedblackqueencount;
     }
     public JLabel getTakedblackknightcount() {
         return takedblackknightcount;
     }
-    public void setTakedblackknightcount(JLabel takedblackknightcount) {
-        this.takedblackknightcount = takedblackknightcount;
-    }
     public JLabel getTakedblackbishopcount() {
         return takedblackbishopcount;
-    }
-    public void setTakedblackbishopcount(JLabel takedblackbishopcount) {
-        this.takedblackbishopcount = takedblackbishopcount;
     }
     public JLabel getTakedblackrookcount() {
         return takedblackrookcount;
     }
-    public void setTakedblackrookcount(JLabel takedblackrookcount) {
-        this.takedblackrookcount = takedblackrookcount;
-    }
     public JLabel getTakedblackpawncount() {
         return takedblackpawncount;
-    }
-    public void setTakedblackpawncount(JLabel takedblackpawncount) {
-        this.takedblackpawncount = takedblackpawncount;
     }
     public ArrayList<Piece> getWhitepieces() {
         return whitepieces;
     }
-    public void setWhitepieces(ArrayList<Piece> whitepieces) {
-        this.whitepieces = whitepieces;
-    }
     public ArrayList<Piece> getBlackpieces() {
         return blackpieces;
     }
-    public void setBlackpieces(ArrayList<Piece> blackpieces) {
-        this.blackpieces = blackpieces;
-    }
-
-    public ChessModel getChessmodel() {
-        return chessmodel;
-    }
-    public void setChessmodel(ChessModel chessmodel) {
-        this.chessmodel = chessmodel;
-    }
-
     public DefaultListModel<Move> getBlackmovesListModel() {
         return blackmovesListModel;
     }
-
-    public void setBlackmovesListModel(DefaultListModel<Move> blackmovesListModel) {
-        this.blackmovesListModel = blackmovesListModel;
-    }
-
     public JList<Move> getBlackmovesList() {
         return blackmovesList;
-    }
-
-    public void setBlackmovesList(JList<Move> blackmovesList) {
-        this.blackmovesList = blackmovesList;
-    }
-
-    public JPanel getMovesPanel() {
-        return movesPanel;
-    }
-
-    public void setMovesPanel(JPanel movesPanel) {
-        this.movesPanel = movesPanel;
-    }
-
-    public JSplitPane getMovesSplitPane() {
-        return movesSplitPane;
-    }
-
-    public void setMovesSplitPane(JSplitPane movesSplitPane) {
-        this.movesSplitPane = movesSplitPane;
     }
 
     public BoardGUI(String color, Account opponent){

@@ -9,29 +9,31 @@ import com.google.firebase.cloud.FirestoreClient;
 import java.io.FileInputStream;
 
 public class FireBaseConnection {
-    private Firestore database;
+    private static Firestore database;
 
-    public Firestore getDatabase() {
+    public static Firestore getDatabase() {
+        if(database==null){
+            try {
+                FileInputStream serviceAccount =
+                        new FileInputStream("src/main/resources/fireStoreConnectionKey.json");
+
+                FirebaseOptions options = FirebaseOptions.builder()
+                        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                        .build();
+
+                FirebaseApp.initializeApp(options);
+
+                System.out.println("Firebase bağlantısı başarılı!");
+
+                database = FirestoreClient.getFirestore();
+
+            } catch (Exception e) {
+                System.out.println("Firebase bağlantısı başarısız: " + e.getMessage());
+            }
+        }
         return database;
     }
 
     public FireBaseConnection() {
-        try {
-            FileInputStream serviceAccount =
-                    new FileInputStream("src/main/resources/fireStoreConnectionKey.json");
-
-            FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .build();
-
-            FirebaseApp.initializeApp(options);
-
-            System.out.println("Firebase bağlantısı başarılı!");
-
-            this.database = FirestoreClient.getFirestore();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

@@ -1,25 +1,24 @@
 package GUI;
 
 import ActionListeners.BoardButtonHandler;
-import ActionListeners.SelectTempoListener;
 import ActionListeners.SelectionListener;
+import Online.Account;
 import Pieces.*;
 import Logic.*;
-import com.google.cloud.firestore.Firestore;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
 public class BoardGUI {
-    private final JFrame frame;
-    private final JPanel boardPanel;
-    private final JPanel infoPanel;
-    private final JPanel movesPanel;
+    private JFrame frame;
+    private JPanel boardPanel;
+    private JPanel infoPanel;
+    private JPanel movesPanel;
     private ArrayList<JButton> buttonlist;
-    private final ArrayList<Piece> whitepieces;
-    private final ArrayList<Piece> blackpieces;
-    private final ChessModel chessmodel;
+    private ArrayList<Piece> whitepieces;
+    private ArrayList<Piece> blackpieces;
+    private ChessModel chessmodel;
     private JLabel whitetimerlabel;
     private JLabel blacktimerlabel;
     private JLabel takedwhitequeencount;
@@ -32,19 +31,39 @@ public class BoardGUI {
     private JLabel takedblackbishopcount;
     private JLabel takedblackrookcount;
     private JLabel takedblackpawncount;
-    private final DefaultListModel<Move> whitemovesListModel;
-    private final DefaultListModel<Move> blackmovesListModel;
-    private final JList<Move> whitemovesList;
-    private final JList<Move> blackmovesList;
-    private final JSplitPane movesSplitPane;
+    private DefaultListModel<Move> whitemovesListModel;
+    private DefaultListModel<Move> blackmovesListModel;
+    private JList<Move> whitemovesList;
+    private JList<Move> blackmovesList;
+    private JSplitPane movesSplitPane;
     private Timer whitetimer;
     private Timer blacktimer;
     private Tempo whitetempo;
     private Tempo blacktempo;
-    private Firestore database;
+    private Color coloroftheplayer;
 
-    public Tempo getWhitetempo() {
-        return whitetempo;
+    public Color getColoroftheplayer() {
+        return coloroftheplayer;
+    }
+
+    public void setColoroftheplayer(Color coloroftheplayer) {
+        this.coloroftheplayer = coloroftheplayer;
+    }
+
+    public JLabel getBlacktimerlabel() {
+        return blacktimerlabel;
+    }
+
+    public void setBlacktimerlabel(JLabel blacktimerlabel) {
+        this.blacktimerlabel = blacktimerlabel;
+    }
+
+    public JLabel getWhitetimerlabel() {
+        return whitetimerlabel;
+    }
+
+    public void setWhitetimerlabel(JLabel whitetimerlabel) {
+        this.whitetimerlabel = whitetimerlabel;
     }
 
     public Tempo getBlacktempo() {
@@ -55,112 +74,193 @@ public class BoardGUI {
         this.blacktempo = blacktempo;
     }
 
+    public Tempo getWhitetempo() {
+        return whitetempo;
+    }
+
     public void setWhitetempo(Tempo whitetempo) {
         this.whitetempo = whitetempo;
-    }
-
-    public JLabel getTakedwhitequeencount() {
-        return takedwhitequeencount;
-    }
-
-    public JLabel getTakedwhiteknightcount() {
-        return takedwhiteknightcount;
-    }
-
-    public JLabel getTakedwhitebishopcount() {
-        return takedwhitebishopcount;
-    }
-
-    public JLabel getTakedwhiterookcount() {
-        return takedwhiterookcount;
-    }
-
-    public JLabel getTakedwhitepawncount() {
-        return takedwhitepawncount;
-    }
-
-    public JLabel getTakedblackqueencount() {
-        return takedblackqueencount;
-    }
-
-    public JLabel getTakedblackknightcount() {
-        return takedblackknightcount;
-    }
-
-    public JLabel getTakedblackbishopcount() {
-        return takedblackbishopcount;
-    }
-
-    public JLabel getTakedblackrookcount() {
-        return takedblackrookcount;
-    }
-
-    public JLabel getTakedblackpawncount() {
-        return takedblackpawncount;
-    }
-
-    public ArrayList<JButton> getButtonlist() {
-        return buttonlist;
-    }
-
-    public JFrame getFrame() {
-        return frame;
-    }
-
-    public JPanel getBoardPanel() {
-        return boardPanel;
-    }
-
-    public JPanel getInfoPanel() {
-        return infoPanel;
-    }
-
-    public ArrayList<Piece> getWhitepieces() {
-        return whitepieces;
-    }
-
-    public ArrayList<Piece> getBlackpieces() {
-        return blackpieces;
-    }
-
-    public DefaultListModel<Move> getWhitemovesListModel() {
-        return whitemovesListModel;
-    }
-
-    public DefaultListModel<Move> getBlackmovesListModel() {
-        return blackmovesListModel;
-    }
-
-    public JList<Move> getWhitemovesList() {
-        return whitemovesList;
-    }
-
-    public JList<Move> getBlackmovesList() {
-        return blackmovesList;
-    }
-
-    public Timer getBlacktimer() {
-        return blacktimer;
     }
 
     public Timer getWhitetimer() {
         return whitetimer;
     }
 
-    public JLabel getWhitetimerlabel() {
-        return whitetimerlabel;
+    public void setWhitetimer(Timer whitetimer) {
+        this.whitetimer = whitetimer;
     }
 
-    public JLabel getBlacktimerlabel() {
-        return blacktimerlabel;
+    public Timer getBlacktimer() {
+        return blacktimer;
     }
 
-    public Firestore getDatabase() {
-        return database;
+    public void setBlacktimer(Timer blacktimer) {
+        this.blacktimer = blacktimer;
     }
 
-    public BoardGUI(Firestore database){
-        this.database=database;
+    public JList<Move> getWhitemovesList() {
+        return whitemovesList;
+    }
+
+    public void setWhitemovesList(JList<Move> whitemovesList) {
+        this.whitemovesList = whitemovesList;
+    }
+
+    public DefaultListModel<Move> getWhitemovesListModel() {
+        return whitemovesListModel;
+    }
+
+    public void setWhitemovesListModel(DefaultListModel<Move> whitemovesListModel) {
+        this.whitemovesListModel = whitemovesListModel;
+    }
+
+    public JPanel getInfoPanel() {
+        return infoPanel;
+    }
+
+    public void setInfoPanel(JPanel infoPanel) {
+        this.infoPanel = infoPanel;
+    }
+
+    public JPanel getBoardPanel() {
+        return boardPanel;
+    }
+
+    public void setBoardPanel(JPanel boardPanel) {
+        this.boardPanel = boardPanel;
+    }
+
+    public JFrame getFrame() {
+        return frame;
+    }
+
+    public void setFrame(JFrame frame) {
+        this.frame = frame;
+    }
+
+    public ArrayList<JButton> getButtonlist() {
+        return buttonlist;
+    }
+
+    public void setButtonlist(ArrayList<JButton> buttonlist) {
+        this.buttonlist = buttonlist;
+    }
+
+    public JLabel getTakedwhitequeencount() {
+        return takedwhitequeencount;
+    }
+
+    public void setTakedwhitequeencount(JLabel takedwhitequeencount) {
+        this.takedwhitequeencount = takedwhitequeencount;
+    }
+
+    public JLabel getTakedwhiteknightcount() {
+        return takedwhiteknightcount;
+    }
+    public void setTakedwhiteknightcount(JLabel takedwhiteknightcount) {
+        this.takedwhiteknightcount = takedwhiteknightcount;
+    }
+    public JLabel getTakedwhitebishopcount() {
+        return takedwhitebishopcount;
+    }
+    public void setTakedwhitebishopcount(JLabel takedwhitebishopcount) {
+        this.takedwhitebishopcount = takedwhitebishopcount;
+    }
+    public JLabel getTakedwhiterookcount() {
+        return takedwhiterookcount;
+    }
+    public void setTakedwhiterookcount(JLabel takedwhiterookcount) {
+        this.takedwhiterookcount = takedwhiterookcount;
+    }
+    public JLabel getTakedwhitepawncount() {
+        return takedwhitepawncount;
+    }
+    public void setTakedwhitepawncount(JLabel takedwhitepawncount) {
+        this.takedwhitepawncount = takedwhitepawncount;
+    }
+    public JLabel getTakedblackqueencount() {
+        return takedblackqueencount;
+    }
+    public void setTakedblackqueencount(JLabel takedblackqueencount) {
+        this.takedblackqueencount = takedblackqueencount;
+    }
+    public JLabel getTakedblackknightcount() {
+        return takedblackknightcount;
+    }
+    public void setTakedblackknightcount(JLabel takedblackknightcount) {
+        this.takedblackknightcount = takedblackknightcount;
+    }
+    public JLabel getTakedblackbishopcount() {
+        return takedblackbishopcount;
+    }
+    public void setTakedblackbishopcount(JLabel takedblackbishopcount) {
+        this.takedblackbishopcount = takedblackbishopcount;
+    }
+    public JLabel getTakedblackrookcount() {
+        return takedblackrookcount;
+    }
+    public void setTakedblackrookcount(JLabel takedblackrookcount) {
+        this.takedblackrookcount = takedblackrookcount;
+    }
+    public JLabel getTakedblackpawncount() {
+        return takedblackpawncount;
+    }
+    public void setTakedblackpawncount(JLabel takedblackpawncount) {
+        this.takedblackpawncount = takedblackpawncount;
+    }
+    public ArrayList<Piece> getWhitepieces() {
+        return whitepieces;
+    }
+    public void setWhitepieces(ArrayList<Piece> whitepieces) {
+        this.whitepieces = whitepieces;
+    }
+    public ArrayList<Piece> getBlackpieces() {
+        return blackpieces;
+    }
+    public void setBlackpieces(ArrayList<Piece> blackpieces) {
+        this.blackpieces = blackpieces;
+    }
+
+    public ChessModel getChessmodel() {
+        return chessmodel;
+    }
+    public void setChessmodel(ChessModel chessmodel) {
+        this.chessmodel = chessmodel;
+    }
+
+    public DefaultListModel<Move> getBlackmovesListModel() {
+        return blackmovesListModel;
+    }
+
+    public void setBlackmovesListModel(DefaultListModel<Move> blackmovesListModel) {
+        this.blackmovesListModel = blackmovesListModel;
+    }
+
+    public JList<Move> getBlackmovesList() {
+        return blackmovesList;
+    }
+
+    public void setBlackmovesList(JList<Move> blackmovesList) {
+        this.blackmovesList = blackmovesList;
+    }
+
+    public JPanel getMovesPanel() {
+        return movesPanel;
+    }
+
+    public void setMovesPanel(JPanel movesPanel) {
+        this.movesPanel = movesPanel;
+    }
+
+    public JSplitPane getMovesSplitPane() {
+        return movesSplitPane;
+    }
+
+    public void setMovesSplitPane(JSplitPane movesSplitPane) {
+        this.movesSplitPane = movesSplitPane;
+    }
+
+    public BoardGUI(String color, Account opponent){
         this.frame=new JFrame("Chess Game");
         this.whitepieces=new ArrayList<>();
         this.blackpieces=new ArrayList<>();
@@ -172,9 +272,9 @@ public class BoardGUI {
         this.whitemovesList = new JList<>(whitemovesListModel);
         JScrollPane whitemovesScrollPane = new JScrollPane(whitemovesList);
         this.movesSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, whitemovesScrollPane, blackmovesScrollPane);
-        addButtonstoBoard();
+        addButtonstoBoard(color);
         chessmodel=new ChessModel(blackpieces,whitepieces,buttonlist,this);
-        addActionListeners();
+        addActionListeners(opponent);
         this.movesPanel = initiateMovesPanel();
         this.infoPanel =initiateInfoPanel();
         SelectionListener selectionListener = new SelectionListener(this);
@@ -190,6 +290,7 @@ public class BoardGUI {
         frame.add(infoPanel);
         frame.setVisible(true);
     }
+    public BoardGUI(){}
     private JPanel initiateBoardPanel(){
         JPanel board=new JPanel();
         board.setLayout(new GridLayout(8,8));
@@ -244,25 +345,6 @@ public class BoardGUI {
         blacktimerlabel.setBounds(50,100,210,100);
         blacktimerlabel.setFont(new Font("Consolas",Font.BOLD,48));
         this.movesPanel.add(blacktimerlabel);
-        /*JDialog selecttempo=new JDialog(getFrame(),true);
-        selecttempo.setUndecorated(true);
-        selecttempo.setSize(300,200);
-        selecttempo.setLocationRelativeTo(getFrame());
-        selecttempo.setLayout(new GridLayout(1,4));
-        JButton oneplusone=new JButton("1+1");
-        JButton threeplustwo=new JButton("3+2");
-        JButton fiveplusthree=new JButton("5+3");
-        JButton tenpluszero=new JButton("10+0");
-        SelectTempoListener selectTempoListener=new SelectTempoListener(oneplusone,threeplustwo,fiveplusthree,tenpluszero,this,selecttempo);
-        oneplusone.addActionListener(selectTempoListener);
-        threeplustwo.addActionListener(selectTempoListener);
-        fiveplusthree.addActionListener(selectTempoListener);
-        tenpluszero.addActionListener(selectTempoListener);
-        selecttempo.add(oneplusone);
-        selecttempo.add(threeplustwo);
-        selecttempo.add(fiveplusthree);
-        selecttempo.add(tenpluszero);
-        selecttempo.setVisible(true);*/
         this.whitetimer=new Timer(1000,e->{
             whitetempo.decreaseRemainingtime(1);
             int minute=whitetempo.getRemainingtime()/60;
@@ -320,111 +402,218 @@ public class BoardGUI {
         whitetimerlabel.setText(m+":"+'0'+'0');
         whitetimer.start();
     }
-    private void addButtonstoBoard(){
+    private void addButtonstoBoard(String color){
         this.buttonlist=new ArrayList<>();
-        for(int row=0;row<8;row++){
-            for(int column=0;column<8;column++){
-                JButton button=new JButton();
-                button.setBounds(column*80,row*80,80,80);
-                if((row+column)%2==0){
-                    button.setBackground(Color.WHITE);
-                }else{
-                    button.setBackground(Color.LIGHT_GRAY);
+        if(color.equals("W")){
+            for(int row=0;row<8;row++){
+                for(int column=0;column<8;column++){
+                    JButton button=new JButton();
+                    button.setBounds(column*80,row*80,80,80);
+                    if((row+column)%2==0){
+                        button.setBackground(Color.WHITE);
+                    }else{
+                        button.setBackground(Color.LIGHT_GRAY);
+                    }
+                    if((row==7&&column==1)||(row==7&&column==6)){
+                        Piece knight =new Knight(button,Color.WHITE);
+                        whitepieces.add(knight);
+                        button.setEnabled(true);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white knight.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    }else if((row==7&&column==2)||(row==7&&column==5)){
+                        Piece bishop=new Bishop(button,Color.WHITE);
+                        whitepieces.add(bishop);
+                        button.setEnabled(true);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white bishop.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    }else if((row==7&&column==0)||(row==7&&column==7)){
+                        Piece rook=new Rook(button,Color.WHITE);
+                        whitepieces.add(rook);
+                        button.setEnabled(true);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white rook.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    }else if(row==7&&column==3){
+                        Piece queen=new Queen(button,Color.WHITE);
+                        whitepieces.add(queen);
+                        button.setEnabled(true);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white queen.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    }else if(column==4&&row==7){
+                        Piece king=new King(button,Color.WHITE);
+                        whitepieces.add(king);
+                        button.setEnabled(true);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white king.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    }else if((row==0&&column==1)||(row==0&&column==6)){
+                        Piece knight =new Knight(button,Color.BLACK);
+                        blackpieces.add(knight);
+                        button.setEnabled(false);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black knight.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    }else if((row==0&&column==2)||(row==0&&column==5)){
+                        Piece bishop=new Bishop(button,Color.BLACK);
+                        blackpieces.add(bishop);
+                        button.setEnabled(false);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black bishop.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    }else if((row==0&&column==0)||(row==0&&column==7)){
+                        Piece rook=new Rook(button,Color.BLACK);
+                        blackpieces.add(rook);
+                        button.setEnabled(false);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black rook.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    }else if(row==0&&column==3){
+                        Piece queen=new Queen(button,Color.BLACK);
+                        blackpieces.add(queen);
+                        button.setEnabled(false);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black queen.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    }else if(column==4&&row==0){
+                        Piece king=new King(button,Color.BLACK);
+                        blackpieces.add(king);
+                        button.setEnabled(false);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black king.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    } else if (row==1) {
+                        Piece pawn=new Pawn(button,Color.BLACK);
+                        blackpieces.add(pawn);
+                        button.setEnabled(false);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black pawn.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    } else if (row==6) {
+                        Piece pawn=new Pawn(button,Color.WHITE);
+                        whitepieces.add(pawn);
+                        button.setEnabled(true);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white pawn.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    } else {
+                        button.setEnabled(false);
+                    }
+                    button.setDisabledIcon(button.getIcon());
+                    button.setFocusPainted(false);
+                    boardPanel.add(button);
+                    buttonlist.add(button);
                 }
-                if((row==7&&column==1)||(row==7&&column==6)){
-                    Piece knight =new Knight(button,Color.WHITE);
-                    whitepieces.add(knight);
-                    button.setEnabled(true);
-                    ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white knight.png");
-                    button.setIcon(imageIcon);
-                    button.setText("");
-                }else if((row==7&&column==2)||(row==7&&column==5)){
-                    Piece bishop=new Bishop(button,Color.WHITE);
-                    whitepieces.add(bishop);
-                    button.setEnabled(true);
-                    ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white bishop.png");
-                    button.setIcon(imageIcon);
-                    button.setText("");
-                }else if((row==7&&column==0)||(row==7&&column==7)){
-                    Piece rook=new Rook(button,Color.WHITE);
-                    whitepieces.add(rook);
-                    button.setEnabled(true);
-                    ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white rook.png");
-                    button.setIcon(imageIcon);
-                    button.setText("");
-                }else if(row==7&&column==3){
-                    Piece queen=new Queen(button,Color.WHITE);
-                    whitepieces.add(queen);
-                    button.setEnabled(true);
-                    ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white queen.png");
-                    button.setIcon(imageIcon);
-                    button.setText("");
-                }else if(column==4&&row==7){
-                    Piece king=new King(button,Color.WHITE);
-                    whitepieces.add(king);
-                    button.setEnabled(true);
-                    ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white king.png");
-                    button.setIcon(imageIcon);
-                    button.setText("");
-                }else if((row==0&&column==1)||(row==0&&column==6)){
-                    Piece knight =new Knight(button,Color.BLACK);
-                    blackpieces.add(knight);
-                    button.setEnabled(false);
-                    ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black knight.png");
-                    button.setIcon(imageIcon);
-                    button.setText("");
-                }else if((row==0&&column==2)||(row==0&&column==5)){
-                    Piece bishop=new Bishop(button,Color.BLACK);
-                    blackpieces.add(bishop);
-                    button.setEnabled(false);
-                    ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black bishop.png");
-                    button.setIcon(imageIcon);
-                    button.setText("");
-                }else if((row==0&&column==0)||(row==0&&column==7)){
-                    Piece rook=new Rook(button,Color.BLACK);
-                    blackpieces.add(rook);
-                    button.setEnabled(false);
-                    ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black rook.png");
-                    button.setIcon(imageIcon);
-                    button.setText("");
-                }else if(row==0&&column==3){
-                    Piece queen=new Queen(button,Color.BLACK);
-                    blackpieces.add(queen);
-                    button.setEnabled(false);
-                    ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black queen.png");
-                    button.setIcon(imageIcon);
-                    button.setText("");
-                }else if(column==4&&row==0){
-                    Piece king=new King(button,Color.BLACK);
-                    blackpieces.add(king);
-                    button.setEnabled(false);
-                    ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black king.png");
-                    button.setIcon(imageIcon);
-                    button.setText("");
-                } else if (row==1) {
-                    Piece pawn=new Pawn(button,Color.BLACK);
-                    blackpieces.add(pawn);
-                    button.setEnabled(false);
-                    ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black pawn.png");
-                    button.setIcon(imageIcon);
-                    button.setText("");
-                } else if (row==6) {
-                    Piece pawn=new Pawn(button,Color.WHITE);
-                    whitepieces.add(pawn);
-                    button.setEnabled(true);
-                    ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white pawn.png");
-                    button.setIcon(imageIcon);
-                    button.setText("");
-                } else {
-                    button.setEnabled(false);
+            }
+        }else if(color.equals("B")){
+            for(int row=7;row>=0;row--) {
+                for (int column = 7; column >= 0; column--) {
+                    JButton button = new JButton();
+                    button.setBounds((7 - column) * 80, (7 - row) * 80, 80, 80);
+                    if ((row + column) % 2 == 0) {
+                        button.setBackground(Color.WHITE);
+                    } else {
+                        button.setBackground(Color.LIGHT_GRAY);
+                    }
+                    if((row==7&&column==1)||(row==7&&column==6)){
+                        Piece knight =new Knight(button,Color.WHITE);
+                        whitepieces.add(knight);
+                        button.setEnabled(true);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white knight.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    }else if((row==7&&column==2)||(row==7&&column==5)){
+                        Piece bishop=new Bishop(button,Color.WHITE);
+                        whitepieces.add(bishop);
+                        button.setEnabled(true);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white bishop.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    }else if((row==7&&column==0)||(row==7&&column==7)){
+                        Piece rook=new Rook(button,Color.WHITE);
+                        whitepieces.add(rook);
+                        button.setEnabled(true);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white rook.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    }else if(row==7&&column==3){
+                        Piece queen=new Queen(button,Color.WHITE);
+                        whitepieces.add(queen);
+                        button.setEnabled(true);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white queen.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    }else if(column==4&&row==7){
+                        Piece king=new King(button,Color.WHITE);
+                        whitepieces.add(king);
+                        button.setEnabled(true);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white king.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    }else if((row==0&&column==1)||(row==0&&column==6)){
+                        Piece knight =new Knight(button,Color.BLACK);
+                        blackpieces.add(knight);
+                        button.setEnabled(false);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black knight.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    }else if((row==0&&column==2)||(row==0&&column==5)){
+                        Piece bishop=new Bishop(button,Color.BLACK);
+                        blackpieces.add(bishop);
+                        button.setEnabled(false);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black bishop.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    }else if((row==0&&column==0)||(row==0&&column==7)){
+                        Piece rook=new Rook(button,Color.BLACK);
+                        blackpieces.add(rook);
+                        button.setEnabled(false);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black rook.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    }else if(row==0&&column==3){
+                        Piece queen=new Queen(button,Color.BLACK);
+                        blackpieces.add(queen);
+                        button.setEnabled(false);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black queen.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    }else if(column==4&&row==0){
+                        Piece king=new King(button,Color.BLACK);
+                        blackpieces.add(king);
+                        button.setEnabled(false);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black king.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    } else if (row==1) {
+                        Piece pawn=new Pawn(button,Color.BLACK);
+                        blackpieces.add(pawn);
+                        button.setEnabled(false);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black pawn.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    } else if (row==6) {
+                        Piece pawn=new Pawn(button,Color.WHITE);
+                        whitepieces.add(pawn);
+                        button.setEnabled(true);
+                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white pawn.png");
+                        button.setIcon(imageIcon);
+                        button.setText("");
+                    } else {
+                        button.setEnabled(false);
+                    }
+                    button.setDisabledIcon(button.getIcon());
+                    button.setFocusPainted(false);
+                    boardPanel.add(button);
+                    buttonlist.addFirst(button);
                 }
-                boardPanel.add(button);
-                buttonlist.add(button);
             }
         }
     }
-    public void addActionListeners(){
-        BoardButtonHandler boardButtonHandler = new BoardButtonHandler(chessmodel, this);
+    public void addActionListeners(Account opponent){
+        BoardButtonHandler boardButtonHandler = new BoardButtonHandler(chessmodel, this,opponent);
         for(JButton button:buttonlist){
             button.addActionListener(boardButtonHandler);
         }

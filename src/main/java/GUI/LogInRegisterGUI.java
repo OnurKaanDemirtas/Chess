@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-public class LogInGUI extends JFrame {
+public class LogInRegisterGUI extends JFrame {
     private Firestore database;
     private JButton createNewAccountButton;
     private JButton logInButton;
@@ -33,7 +33,7 @@ public class LogInGUI extends JFrame {
         return passwordTextField;
     }
 
-    public LogInGUI(Firestore database){
+    public LogInRegisterGUI(Firestore database){
         this.database=database;
         setSize(400,400);
         setLayout(null);

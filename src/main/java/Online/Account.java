@@ -9,6 +9,7 @@ public class Account {
     private int id;
     private int Rating;
     private boolean online;
+    private boolean lookingformatchmaking;
 
     public String getPassword() {
         return password;
@@ -30,12 +31,16 @@ public class Account {
         return online;
     }
 
-    public void setGameHistory(Game game){
-        this.gameHistory.add(game);
+    public void setGameHistory(ArrayList<Game> gameHistory) {
+        this.gameHistory = gameHistory;
     }
 
     public void setRating(int rating) {
         Rating = rating;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public void setId(int id) {
@@ -44,6 +49,14 @@ public class Account {
 
     public void setOnline(boolean online) {
         this.online = online;
+    }
+
+    public boolean isLookingformatchmaking() {
+        return lookingformatchmaking;
+    }
+
+    public void setLookingformatchmaking(boolean lookingformatchmaking) {
+        this.lookingformatchmaking = lookingformatchmaking;
     }
 
     public void setPassword(String password) {
@@ -62,6 +75,7 @@ public class Account {
         this.gameHistory=new ArrayList<>();
         this.Rating=1000;
         this.id=id;
+        this.online=false;
     }
 
     @Override

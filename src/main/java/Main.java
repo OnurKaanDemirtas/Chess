@@ -1,11 +1,11 @@
-import GUI.LogInGUI;
+import ActionListeners.LogInRegisterButtonHandler;
+import GUI.LogInRegisterGUI;
 import Online.FireBaseConnection;
+import java.util.concurrent.ExecutionException;
 
 public class Main {
-    public static void main(String[] args){
-        FireBaseConnection fireBaseConnection=new FireBaseConnection();
-        LogInGUI registerGUI=new LogInGUI(fireBaseConnection.getDatabase());
-        registerGUI.addActionListeners(new ActionListeners.RegisterButtonHandler(registerGUI));
-        //new BoardGUI(fireBaseConnection.getDatabase());
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        LogInRegisterGUI registerGUI=new LogInRegisterGUI(FireBaseConnection.getDatabase());
+        registerGUI.addActionListeners(new LogInRegisterButtonHandler(registerGUI));
     }
 }

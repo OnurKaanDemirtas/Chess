@@ -2,6 +2,7 @@ package Logic;
 import GUI.BoardGUI;
 import GUI.Move;
 import GUI.PawnPromoteGUI;
+import Online.MoveNotation;
 import Pieces.*;
 import javax.swing.*;
 import java.awt.*;
@@ -215,6 +216,7 @@ public class ChessModel {
                     if (enemypiece!=null) {
                         if(enemypiece instanceof King){
                             ((King) enemypiece).getPiecesthatcheck().add(piece);
+                            break;
                         }else{
                             piece.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                             break;
@@ -237,6 +239,7 @@ public class ChessModel {
             if (enemypiece!=null) {
                 if(enemypiece instanceof King){
                     ((King) enemypiece).getPiecesthatcheck().add(piece);
+                    break;
                 }else{
                     piece.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                     break;
@@ -254,6 +257,7 @@ public class ChessModel {
             if (enemypiece!=null) {
                 if(enemypiece instanceof King){
                     ((King) enemypiece).getPiecesthatcheck().add(piece);
+                    break;
                 }else{
                     piece.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                     break;
@@ -271,6 +275,7 @@ public class ChessModel {
             if (enemypiece != null) {
                 if (enemypiece instanceof King) {
                     ((King) enemypiece).getPiecesthatcheck().add(piece);
+                    break;
                 } else {
                     piece.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                     break;
@@ -288,6 +293,7 @@ public class ChessModel {
             if (enemypiece != null) {
                 if (enemypiece instanceof King) {
                     ((King) enemypiece).getPiecesthatcheck().add(piece);
+                    break;
                 } else {
                     piece.getPlaybleplaces().add(boardbuttons[temporaryindex.getRow()][temporaryindex.getColumn()]);
                     break;
@@ -409,8 +415,7 @@ public class ChessModel {
                 for(Rook rook : rooks){
                     if(rook.getHowmanytimesitmoved() == 0){
                         Index indexofrook = findIndex(rook.getButton());
-                        int distancebetweenkingandrook = Math.abs(indexofking.getColumn() - indexofrook.getColumn());
-                        if(canplayerdocastling(distancebetweenkingandrook, indexofking, indexofrook, pieces, enemypieces, king)){
+                        if(canplayerdocastling(indexofking, indexofrook, pieces, enemypieces, king)){
                             int direction = (indexofrook.getColumn() - indexofking.getColumn()) > 0 ? 1 : -1;
                             int castlingColumn = indexofking.getColumn() + direction * 2;
                             king.getPlaybleplaces().add(boardbuttons[indexofking.getRow()][castlingColumn]);
@@ -422,9 +427,9 @@ public class ChessModel {
             }
         }
     }
-    private boolean canplayerdocastling(int distancebetweenkingandrook, Index indexofking, Index indexofrook, ArrayList<Piece> pieces, ArrayList<Piece> enemypieces, King king){
+    private boolean canplayerdocastling(Index indexofking, Index indexofrook, ArrayList<Piece> pieces, ArrayList<Piece> enemypieces, King king){
         int direction = (indexofrook.getColumn() - indexofking.getColumn()) > 0 ? 1 : -1;
-        for(int a = 1; a < distancebetweenkingandrook; a++){
+        for(int a = 1; a < 2; a++){
             int col = indexofking.getColumn() + direction * a;
             Index temporaryindex = new Index(indexofking.getRow(), col);
             if(isthereafriendpiece(temporaryindex, pieces, king)){
@@ -725,6 +730,25 @@ public class ChessModel {
             boardGUI.getBlackmovesList().setSelectedIndex(boardGUI.getBlackmovesListModel().getSize()-1);
         }
         boardGUI.getFrame().validate();
+    }
+    public void move(MoveNotation moveNotation,String piececolor){
+        if(piececolor.equals("White")){
+            for(Piece piece:whitepieces){
+                Index indexofbutton=findIndex(piece.getButton());
+                if(moveNotation.getFrom().equals(indexofbutton)){
+                    move(piece,boardbuttons[moveNotation.getTo().getRow()][moveNotation.getTo().getColumn()]);
+                    break;
+                }
+            }
+        }else{
+            for(Piece piece:blackpieces){
+                Index indexofbutton=findIndex(piece.getButton());
+                if(moveNotation.getFrom().equals(indexofbutton)){
+                    move(piece,boardbuttons[moveNotation.getTo().getRow()][moveNotation.getTo().getColumn()]);
+                    break;
+                }
+            }
+        }
     }
 
     private int findsmallerone(Index indexforcompare){

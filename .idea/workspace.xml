@@ -4,18 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="673978da-cce2-4a00-9229-7a3d89cd441d" name="Changes" comment="feat:&quot;checking with pawn implemented,ChessModel class has been further streamlined&quot;">
+    <list default="true" id="673978da-cce2-4a00-9229-7a3d89cd441d" name="Changes" comment="feat:&quot;The castling algorithm has been fixed, the Calculation and Game classes have been made compatible with the database, a MoveNotation class has been added, some adjustments have been made to improve the program's speed, and the fading in images when buttons are enabled has been fixed.&quot;">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ActionListeners/PawnPromoteButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ActionListeners/PawnPromoteButtonHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ActionListeners/RegisterButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ActionListeners/RegisterButtonHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ActionListeners/SelectTempoListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ActionListeners/SelectTempoListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ActionListeners/BoardButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ActionListeners/BoardButtonHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ActionListeners/CreateNewAccountButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ActionListeners/CreateNewAccountButtonHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ActionListeners/RegisterButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ActionListeners/LogInRegisterButtonHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ActionListeners/SelectTempoListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ActionListeners/MainPageButtonHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/GUI/BoardGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI/BoardGUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/GUI/CreateNewAccountGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI/CreateNewAccountGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/GUI/LogInGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI/LogInRegisterGUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/GUI/MainPageGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI/MainPageGUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/GUI/Move.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI/Move.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/GUI/PawnPromoteGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI/PawnPromoteGUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/GUI/RegisterGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI/LogInGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Logic/ChessModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Logic/ChessModel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Online/Account.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Online/Account.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Online/FireBaseConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Online/FireBaseConnection.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Online/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Online/Game.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -90,7 +92,7 @@
     </key>
   </component>
   <component name="RunManager">
-    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+    <configuration name="Main" type="Application" factoryName="Application" singleton="false" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Main" />
       <module name="OnlineChess" />
       <method v="2">
@@ -184,7 +186,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756246986076</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="feat:&quot;main page implemented and in PawnPromoteGUI class piece icons file path fixed&quot;">
+      <option name="closed" value="true" />
+      <created>1758187245170</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1758187245170</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -208,6 +218,8 @@
     <MESSAGE value="feat:&quot;notation of moves implemented and playable places bug fixed&quot;" />
     <MESSAGE value="feat:&quot;project structure changed to maven,database implemented,account and game implemented,adding account implemented&quot;" />
     <MESSAGE value="feat:&quot;checking with pawn implemented,ChessModel class has been further streamlined&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat:&quot;checking with pawn implemented,ChessModel class has been further streamlined&quot;" />
+    <MESSAGE value="feat:&quot;main page implemented and in PawnPromoteGUI class piece icons file path fixed&quot;" />
+    <MESSAGE value="feat:&quot;The castling algorithm has been fixed, the Calculation and Game classes have been made compatible with the database, a MoveNotation class has been added, some adjustments have been made to improve the program's speed, and the fading in images when buttons are enabled has been fixed.&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat:&quot;The castling algorithm has been fixed, the Calculation and Game classes have been made compatible with the database, a MoveNotation class has been added, some adjustments have been made to improve the program's speed, and the fading in images when buttons are enabled has been fixed.&quot;" />
   </component>
 </project>

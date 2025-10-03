@@ -1,6 +1,7 @@
 package ActionListeners;
 
 import Logic.*;
+import Online.Account;
 import PieceIcons.CircleIcon;
 import Pieces.*;
 import GUI.BoardGUI;
@@ -16,11 +17,13 @@ public class BoardButtonHandler implements ActionListener {
     private ArrayList<Piece> blackpieces;
     private int selectedpieceindex;
     private Color whoseturnisit;
+    private final Account opponent;
 
-    public BoardButtonHandler(ChessModel model, BoardGUI boardGUI) {
+    public BoardButtonHandler(ChessModel model, BoardGUI boardGUI,Account opponent) {
         this.model = model;
         this.whitepieces = boardGUI.getWhitepieces();
         this.blackpieces = boardGUI.getBlackpieces();
+        this.opponent=opponent;
         whoseturnisit = Color.WHITE;
         selectedpieceindex = -1;
     }

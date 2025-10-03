@@ -38,7 +38,7 @@ public class CreateNewAccountButtonHandler implements ActionListener {
                     DatabaseSize databaseSize=documentReference.get().get().toObject(DatabaseSize.class);
                     assert databaseSize != null;
                     int size=databaseSize.getSize();
-                    Account newAccount=new Account(username,password,size+1);
+                    Account newAccount=new Account(username,password,size);
                     database.collection("accounts").document(newAccount.toString()).set(newAccount).get();
                     documentReference.update("size",size+1);
                     createNewAccountGUI.dispose();

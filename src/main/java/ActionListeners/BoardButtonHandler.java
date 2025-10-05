@@ -2,6 +2,7 @@ package ActionListeners;
 
 import Logic.*;
 import Online.Account;
+import Online.MatchMaking;
 import PieceIcons.CircleIcon;
 import Pieces.*;
 import GUI.BoardGUI;
@@ -17,9 +18,9 @@ public class BoardButtonHandler implements ActionListener {
     private ArrayList<Piece> blackpieces;
     private int selectedpieceindex;
     private Color whoseturnisit;
-    private final Account opponent;
+    private final MatchMaking opponent;
 
-    public BoardButtonHandler(ChessModel model, BoardGUI boardGUI,Account opponent) {
+    public BoardButtonHandler(ChessModel model, BoardGUI boardGUI, MatchMaking opponent) {
         this.model = model;
         this.whitepieces = boardGUI.getWhitepieces();
         this.blackpieces = boardGUI.getBlackpieces();

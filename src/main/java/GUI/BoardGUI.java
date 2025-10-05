@@ -3,6 +3,7 @@ package GUI;
 import ActionListeners.BoardButtonHandler;
 import ActionListeners.SelectionListener;
 import Online.Account;
+import Online.MatchMaking;
 import Pieces.*;
 import Logic.*;
 
@@ -121,7 +122,7 @@ public class BoardGUI {
         return blackmovesList;
     }
 
-    public BoardGUI(String color, Account opponent){
+    public BoardGUI(String color, MatchMaking opponent){
         this.frame=new JFrame("Chess Game");
         this.whitepieces=new ArrayList<>();
         this.blackpieces=new ArrayList<>();
@@ -197,7 +198,9 @@ public class BoardGUI {
         moves.add(movesSplitPane);
         return moves;
     }
-    public void selecttimer(){
+    public void selecttimer(Tempo whitetempo,Tempo blacktempo){
+        this.whitetempo=whitetempo;
+        this.blacktempo=blacktempo;
         this.whitetimerlabel=new JLabel();
         whitetimerlabel.setBounds(50,650,210,100);
         whitetimerlabel.setFont(new Font("Consolas",Font.BOLD,48));
@@ -207,7 +210,7 @@ public class BoardGUI {
         blacktimerlabel.setFont(new Font("Consolas",Font.BOLD,48));
         this.movesPanel.add(blacktimerlabel);
         this.whitetimer=new Timer(1000,e->{
-            whitetempo.decreaseRemainingtime(1);
+            whitetempo.setRemainingtime(whitetempo.getRemainingtime()-1);
             int minute=whitetempo.getRemainingtime()/60;
             int second=whitetempo.getRemainingtime()-minute*60;
             String m=minute+"";
@@ -231,7 +234,7 @@ public class BoardGUI {
             }
         });
         this.blacktimer=new Timer(1000,e ->{
-            blacktempo.decreaseRemainingtime(1);
+            blacktempo.setRemainingtime(blacktempo.getRemainingtime()-1);
             int minute=blacktempo.getRemainingtime()/60;
             int second=blacktempo.getRemainingtime()-minute*60;
             String m=minute+"";
@@ -473,7 +476,7 @@ public class BoardGUI {
             }
         }
     }
-    public void addActionListeners(Account opponent){
+    public void addActionListeners(MatchMaking opponent){
         BoardButtonHandler boardButtonHandler = new BoardButtonHandler(chessmodel, this,opponent);
         for(JButton button:buttonlist){
             button.addActionListener(boardButtonHandler);

@@ -637,7 +637,7 @@ public class ChessModel {
             for(Piece piece:whitepieces){
                 piece.getButton().setEnabled(false);
             }
-            boardGUI.getWhitetempo().increaseRemainingtime();
+            boardGUI.getWhitetempo().setRemainingtime(boardGUI.getWhitetempo().getRemainingtime()+boardGUI.getWhitetempo().getTimetoaddedforeachmove());
             int minute=boardGUI.getWhitetempo().getRemainingtime()/60;
             int second=boardGUI.getWhitetempo().getRemainingtime()-60*minute;
             String m=minute+"";
@@ -686,7 +686,7 @@ public class ChessModel {
             for (Piece piece:blackpieces){
                 piece.getButton().setEnabled(false);
             }
-            boardGUI.getBlacktempo().increaseRemainingtime();
+            boardGUI.getBlacktempo().setRemainingtime(boardGUI.getBlacktempo().getRemainingtime()+boardGUI.getBlacktempo().getTimetoaddedforeachmove());
             int minute=boardGUI.getBlacktempo().getRemainingtime()/60;
             int second=boardGUI.getBlacktempo().getRemainingtime()-60*minute;
             String m=minute+"";

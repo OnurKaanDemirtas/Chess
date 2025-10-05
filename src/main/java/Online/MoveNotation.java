@@ -5,6 +5,15 @@ import Logic.Index;
 public class MoveNotation {
     private Index from;
     private Index to;
+    private String promotionPiece;
+
+    public String getPromotionPiece() {
+        return promotionPiece;
+    }
+
+    public void setPromotionPiece(String promotionPiece) {
+        this.promotionPiece = promotionPiece;
+    }
 
     public Index getTo() {
         return to;
@@ -26,4 +35,6 @@ public class MoveNotation {
         this.from=from;
         this.to=to;
     }
+
+    public MoveNotation(){};
 }

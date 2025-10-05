@@ -4,11 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="673978da-cce2-4a00-9229-7a3d89cd441d" name="Changes" comment="feat:&quot;The castling algorithm has been fixed, the Calculation and Game classes have been made compatible with the database, a MoveNotation class has been added, some adjustments have been made to improve the program's speed, matchmaking algorithm implemented, and the fading in images when buttons are enabled has been fixed.&quot;">
-      <change afterPath="$PROJECT_DIR$/src/main/java/Online/MoveNotation.java" afterDir="false" />
+    <list default="true" id="673978da-cce2-4a00-9229-7a3d89cd441d" name="Changes" comment="feat:&quot;The Movenotation class has been added to GitHub, and unnecessary fields in the BoardGUI class have been removed.&quot;">
+      <change afterPath="$PROJECT_DIR$/src/main/java/Online/MatchMaking.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ActionListeners/BoardButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ActionListeners/BoardButtonHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ActionListeners/LogInRegisterButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ActionListeners/LogInRegisterButtonHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ActionListeners/MainPageButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ActionListeners/MainPageButtonHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/GUI/BoardGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI/BoardGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Logic/ChessModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Logic/ChessModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Logic/Tempo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Logic/Tempo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Online/Account.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Online/Account.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Online/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Online/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Online/MoveNotation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Online/MoveNotation.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,18 +60,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/onurk/OneDrive/Dokumente/Projeler/chessProject/src/main&quot;,
-    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/onurk/AppData/Local/Temp/8ee0bc98-94c1-4dde-a3e7-d7fae2f5554d_CS102Project (2).zip.54d/chess/src/Main.java&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "dev",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/onurk/OneDrive/Dokumente/Projeler/chessProject/src/main",
+    "onboarding.tips.debug.path": "C:/Users/onurk/AppData/Local/Temp/8ee0bc98-94c1-4dde-a3e7-d7fae2f5554d_CS102Project (2).zip.54d/chess/src/Main.java",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\onurk\OneDrive\Dokumente\Projeler\chessProject\src\main" />
@@ -192,7 +200,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759528049364</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="feat:&quot;The Movenotation class has been added to GitHub, and unnecessary fields in the BoardGUI class have been removed.&quot;">
+      <option name="closed" value="true" />
+      <created>1759529252949</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1759529252949</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -219,6 +235,7 @@
     <MESSAGE value="feat:&quot;main page implemented and in PawnPromoteGUI class piece icons file path fixed&quot;" />
     <MESSAGE value="feat:&quot;The castling algorithm has been fixed, the Calculation and Game classes have been made compatible with the database, a MoveNotation class has been added, some adjustments have been made to improve the program's speed, and the fading in images when buttons are enabled has been fixed.&quot;" />
     <MESSAGE value="feat:&quot;The castling algorithm has been fixed, the Calculation and Game classes have been made compatible with the database, a MoveNotation class has been added, some adjustments have been made to improve the program's speed, matchmaking algorithm implemented, and the fading in images when buttons are enabled has been fixed.&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat:&quot;The castling algorithm has been fixed, the Calculation and Game classes have been made compatible with the database, a MoveNotation class has been added, some adjustments have been made to improve the program's speed, matchmaking algorithm implemented, and the fading in images when buttons are enabled has been fixed.&quot;" />
+    <MESSAGE value="feat:&quot;The Movenotation class has been added to GitHub, and unnecessary fields in the BoardGUI class have been removed.&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat:&quot;The Movenotation class has been added to GitHub, and unnecessary fields in the BoardGUI class have been removed.&quot;" />
   </component>
 </project>

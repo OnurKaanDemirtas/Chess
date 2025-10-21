@@ -22,22 +22,22 @@ public class SelectionListener implements ListSelectionListener {
         if (e.getValueIsAdjusting()) {
             return;
         }
-        if (boardGUI.getWhitemovesListModel().getSize() > boardGUI.getBlackmovesListModel().getSize()) {
-            this.currentMove = boardGUI.getWhitemovesListModel().getElementAt(boardGUI.getWhitemovesListModel().getSize() - 1);
-        } else if (boardGUI.getBlackmovesListModel().getSize() >= boardGUI.getWhitemovesListModel().getSize()) {
-            this.currentMove = boardGUI.getBlackmovesListModel().getElementAt(boardGUI.getBlackmovesListModel().getSize() - 1);
+        if (boardGUI.getWhiteMovesListModel().getSize() > boardGUI.getBlackMovesListModel().getSize()) {
+            this.currentMove = boardGUI.getWhiteMovesListModel().getElementAt(boardGUI.getWhiteMovesListModel().getSize() - 1);
+        } else if (boardGUI.getBlackMovesListModel().getSize() >= boardGUI.getWhiteMovesListModel().getSize()) {
+            this.currentMove = boardGUI.getBlackMovesListModel().getElementAt(boardGUI.getBlackMovesListModel().getSize() - 1);
         }
         Move selectedMove = null;
-        if (e.getSource()==boardGUI.getWhitemovesList()) {
-            boardGUI.getBlackmovesList().removeListSelectionListener(this);
-            boardGUI.getBlackmovesList().clearSelection();
-            boardGUI.getBlackmovesList().addListSelectionListener(this);
-            selectedMove = boardGUI.getWhitemovesList().getSelectedValue();
-        } else if (e.getSource()==boardGUI.getBlackmovesList()) {
-            boardGUI.getWhitemovesList().removeListSelectionListener(this);
-            boardGUI.getWhitemovesList().clearSelection();
-            boardGUI.getWhitemovesList().addListSelectionListener(this);
-            selectedMove = boardGUI.getBlackmovesList().getSelectedValue();
+        if (e.getSource()==boardGUI.getWhiteMovesList()) {
+            boardGUI.getBlackMovesList().removeListSelectionListener(this);
+            boardGUI.getBlackMovesList().clearSelection();
+            boardGUI.getBlackMovesList().addListSelectionListener(this);
+            selectedMove = boardGUI.getWhiteMovesList().getSelectedValue();
+        } else if (e.getSource()==boardGUI.getBlackMovesList()) {
+            boardGUI.getWhiteMovesList().removeListSelectionListener(this);
+            boardGUI.getWhiteMovesList().clearSelection();
+            boardGUI.getWhiteMovesList().addListSelectionListener(this);
+            selectedMove = boardGUI.getBlackMovesList().getSelectedValue();
         }
         if (selectedMove != null) {
             if(moves.isEmpty()&&!selectedMove.equals(currentMove)){

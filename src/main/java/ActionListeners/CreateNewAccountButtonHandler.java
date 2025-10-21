@@ -15,7 +15,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 public class CreateNewAccountButtonHandler implements ActionListener {
-    private CreateNewAccountGUI createNewAccountGUI;
+    private final CreateNewAccountGUI createNewAccountGUI;
 
     public CreateNewAccountButtonHandler(CreateNewAccountGUI createNewAccountGUI){
         this.createNewAccountGUI=createNewAccountGUI;
@@ -34,7 +34,7 @@ public class CreateNewAccountButtonHandler implements ActionListener {
                         JOptionPane.showMessageDialog(createNewAccountGUI,"Username is already taken. Please choose another one.");
                         return;
                     }
-                    DocumentReference documentReference=database.collection("Databasesize").document("size");
+                    DocumentReference documentReference=database.collection("DatabaseSize").document("size");
                     DatabaseSize databaseSize=documentReference.get().get().toObject(DatabaseSize.class);
                     assert databaseSize != null;
                     int size=databaseSize.getSize();
@@ -42,8 +42,7 @@ public class CreateNewAccountButtonHandler implements ActionListener {
                     database.collection("accounts").document(newAccount.toString()).set(newAccount).get();
                     documentReference.update("size",size+1);
                     createNewAccountGUI.dispose();
-                }catch (Exception ex){
-                    ex.printStackTrace();
+                }catch (Exception ignored){
                 }
             } else {
                 JOptionPane.showMessageDialog(createNewAccountGUI,"Please enter a valid username and password.");

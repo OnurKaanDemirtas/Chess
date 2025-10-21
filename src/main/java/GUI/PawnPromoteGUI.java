@@ -14,21 +14,22 @@ public class PawnPromoteGUI extends JDialog {
     private final JButton buttonfornewpiece;
     private final Color colorfornewpiece;
     private final ArrayList<Piece> pieces;
-    private String promotedpiece;
+    private String promotionTypeForFirebase;
 
-    public String getPromotedpiece() {
-        return promotedpiece;
+    public String getPromotionTypeForFirebase() {
+        return promotionTypeForFirebase;
     }
 
-    public void setPromotedpiece(String promotedpiece) {
-        this.promotedpiece = promotedpiece;
+    public void setPromotionTypeForFirebase(String promotionTypeForFirebase) {
+        this.promotionTypeForFirebase = promotionTypeForFirebase;
     }
 
-    public PawnPromoteGUI(JFrame parent, JButton buttonfornewpiece, Color colorfornewpiece, ArrayList<Piece> pieces, BoardGUI boardGUI) {
+    public PawnPromoteGUI(JFrame parent, JButton buttonfornewpiece, Color colorfornewpiece, ArrayList<Piece> pieces, BoardGUI boardGUI, String promotionTypeForFirebase) {
         super(parent,true);
         this.buttonfornewpiece = buttonfornewpiece;
         this.colorfornewpiece = colorfornewpiece;
         this.pieces = pieces;
+        this.promotionTypeForFirebase = promotionTypeForFirebase;
         setSize(200,100);
         setLocationRelativeTo(boardGUI.getBoardPanel());
         setUndecorated(true);
@@ -97,7 +98,7 @@ public class PawnPromoteGUI extends JDialog {
     public ArrayList<Piece> getPieces() {
         return pieces;
     }
-    public void addActionListeners() {
+    public void addActionListeners(){
         PawnPromoteButtonHandler pawnPromoteButtonHandler = new PawnPromoteButtonHandler(this);
         queenButton.addActionListener(pawnPromoteButtonHandler);
         rookButton.addActionListener(pawnPromoteButtonHandler);

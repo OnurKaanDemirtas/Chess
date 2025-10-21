@@ -1,28 +1,28 @@
 package Logic;
 
 public class Tempo {
-    private int remainingtime;
-    private int timetoaddedforeachmove;
+    private int remainingTime;
+    private int timeToAddedForEachMove;
 
-    public int getRemainingtime() {
-        return remainingtime;
+    public int getRemainingTime() {
+        return remainingTime;
     }
 
-    public void setRemainingtime(int remainingtime) {
-        this.remainingtime = remainingtime;
+    public void setRemainingTime(int remainingTime) {
+        this.remainingTime = remainingTime;
     }
 
-    public int getTimetoaddedforeachmove() {
-        return timetoaddedforeachmove;
+    public int getTimeToAddedForEachMove() {
+        return timeToAddedForEachMove;
     }
 
-    public void setTimetoaddedforeachmove(int timetoaddedforeachmove) {
-        this.timetoaddedforeachmove = timetoaddedforeachmove;
+    public void setTimeToAddedForEachMove(int timeToAddedForEachMove) {
+        this.timeToAddedForEachMove = timeToAddedForEachMove;
     }
 
-    public Tempo(int remainingtime, int timetoaddedforeachmove){
-        this.remainingtime=remainingtime;
-        this.timetoaddedforeachmove=timetoaddedforeachmove;
+    public Tempo(int remainingTime, int timeToAddedForEachMove){
+        this.remainingTime = remainingTime;
+        this.timeToAddedForEachMove = timeToAddedForEachMove;
     }
 
     public Tempo(){}

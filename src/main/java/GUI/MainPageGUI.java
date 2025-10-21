@@ -32,7 +32,7 @@ public class MainPageGUI extends JFrame {
         profileButton.setBackground(Color.MAGENTA);
         JButton logoutButton = new JButton("Logout");
         logoutButton.setBackground(Color.RED);
-        MainPageButtonHandler mainPageButtonHandler = new MainPageButtonHandler(oneplusone, threeplustwo, fiveplusthree, tenpluszero, leaderboardButton, GameArchive, logoutButton, profileButton,player);
+        MainPageButtonHandler mainPageButtonHandler = new MainPageButtonHandler(this,oneplusone, threeplustwo, fiveplusthree, tenpluszero, leaderboardButton, GameArchive, logoutButton, profileButton,player);
         oneplusone.addActionListener(mainPageButtonHandler);
         threeplustwo.addActionListener(mainPageButtonHandler);
         fiveplusthree.addActionListener(mainPageButtonHandler);

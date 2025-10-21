@@ -11,65 +11,69 @@ public class PawnPromoteButtonHandler implements ActionListener {
     private final PawnPromoteGUI pawnPromoteGUI;
 
     public PawnPromoteButtonHandler(PawnPromoteGUI pawnPromoteGUI) {
-        this.pawnPromoteGUI = pawnPromoteGUI;
+            this.pawnPromoteGUI = pawnPromoteGUI;
     }
     @Override
-    public void actionPerformed(ActionEvent e) {
-        if(e.getSource()==pawnPromoteGUI.getQueenButton()){
+    public void actionPerformed (ActionEvent e){
+        if (e.getSource() == pawnPromoteGUI.getQueenButton()) {
             promotePawn("Queen");
-        } else if(e.getSource() == pawnPromoteGUI.getBishopButton()){
+        } else if (e.getSource() == pawnPromoteGUI.getBishopButton()) {
             promotePawn("Bishop");
-        } else if(e.getSource() == pawnPromoteGUI.getKnightButton()){
+        } else if (e.getSource() == pawnPromoteGUI.getKnightButton()) {
             promotePawn("Knight");
-        } else if(e.getSource() == pawnPromoteGUI.getRookButton()){
+        } else if (e.getSource() == pawnPromoteGUI.getRookButton()) {
             promotePawn("Rook");
         }
         pawnPromoteGUI.dispose();
     }
-    public void promotePawn(String pieceType) {
+    public void promotePawn (String pieceType) {
         JButton buttonForNewPiece = pawnPromoteGUI.getButtonfornewpiece();
         Color colorForNewPiece = pawnPromoteGUI.getColorfornewpiece();
         switch (pieceType) {
             case "Queen":
-                Piece queen=new Queen(buttonForNewPiece, colorForNewPiece);
+                Piece queen = new Queen(buttonForNewPiece, colorForNewPiece);
                 pawnPromoteGUI.getPieces().add(queen);
-                pawnPromoteGUI.setPromotedpiece(queen.getPiecetype());
-                if(colorForNewPiece.equals(Color.WHITE)) {
+                pawnPromoteGUI.setPromotionTypeForFirebase(queen.getPiecetype());
+                if (colorForNewPiece.equals(Color.WHITE)) {
                     buttonForNewPiece.setIcon(new ImageIcon("src/main/java/PieceIcons/White/white queen.png"));
-                }else {
+                } else {
                     buttonForNewPiece.setIcon(new ImageIcon("src/main/java/PieceIcons/Black/black queen.png"));
                 }
+                pawnPromoteGUI.setPromotionTypeForFirebase("Queen");
                 break;
             case "Bishop":
-                Piece bishop=new Bishop(buttonForNewPiece, colorForNewPiece);
+                Piece bishop = new Bishop(buttonForNewPiece, colorForNewPiece);
                 pawnPromoteGUI.getPieces().add(bishop);
-                pawnPromoteGUI.setPromotedpiece(bishop.getPiecetype());
+                pawnPromoteGUI.setPromotionTypeForFirebase(bishop.getPiecetype());
                 if (colorForNewPiece.equals(Color.WHITE)) {
                     buttonForNewPiece.setIcon(new ImageIcon("src/main/java/PieceIcons/White/white bishop.png"));
-                }else {
+                } else {
                     buttonForNewPiece.setIcon(new ImageIcon("src/main/java/PieceIcons/Black/black bishop.png"));
                 }
+                pawnPromoteGUI.setPromotionTypeForFirebase("Bishop");
                 break;
             case "Knight":
-                Piece knight=new Knight(buttonForNewPiece, colorForNewPiece);
+                Piece knight = new Knight(buttonForNewPiece, colorForNewPiece);
                 pawnPromoteGUI.getPieces().add(knight);
-                pawnPromoteGUI.setPromotedpiece(knight.getPiecetype());
+                pawnPromoteGUI.setPromotionTypeForFirebase(knight.getPiecetype());
                 if (colorForNewPiece.equals(Color.WHITE)) {
                     buttonForNewPiece.setIcon(new ImageIcon("src/main/java/PieceIcons/White/white knight.png"));
-                }else{
+                } else {
                     buttonForNewPiece.setIcon(new ImageIcon("src/main/java/PieceIcons/Black/black knight.png"));
                 }
+                pawnPromoteGUI.setPromotionTypeForFirebase("Knight");
                 break;
             case "Rook":
-                Rook rook=new Rook(buttonForNewPiece, colorForNewPiece);
+                Rook rook = new Rook(buttonForNewPiece, colorForNewPiece);
                 pawnPromoteGUI.getPieces().add(rook);
-                pawnPromoteGUI.setPromotedpiece(rook.getPiecetype());
+                pawnPromoteGUI.setPromotionTypeForFirebase(rook.getPiecetype());
                 rook.increasehowmanytimesitmoved();
-                if( colorForNewPiece.equals(Color.WHITE)) {
+                if (colorForNewPiece.equals(Color.WHITE)) {
                     buttonForNewPiece.setIcon(new ImageIcon("src/main/java/PieceIcons/White/white rook.png"));
-                }else {
+                } else {
                     buttonForNewPiece.setIcon(new ImageIcon("src/main/java/PieceIcons/Black/black rook.png"));
                 }
+                pawnPromoteGUI.setPromotionTypeForFirebase("Rook");
                 break;
         }
     }

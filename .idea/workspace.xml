@@ -4,18 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="673978da-cce2-4a00-9229-7a3d89cd441d" name="Changes" comment="feat:&quot;The Movenotation class has been added to GitHub, and unnecessary fields in the BoardGUI class have been removed.&quot;">
-      <change afterPath="$PROJECT_DIR$/src/main/java/Online/MatchMaking.java" afterDir="false" />
+    <list default="true" id="673978da-cce2-4a00-9229-7a3d89cd441d" name="Changes" comment="feat:&quot;The matchmaking algorithm has been completed,the MatchMaking class has been created,the code to start the games of paired players has been completed.&quot;">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ActionListeners/BoardButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ActionListeners/BoardButtonHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ActionListeners/LogInRegisterButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ActionListeners/LogInRegisterButtonHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ActionListeners/CreateNewAccountButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ActionListeners/CreateNewAccountButtonHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ActionListeners/MainPageButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ActionListeners/MainPageButtonHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ActionListeners/PawnPromoteButtonHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ActionListeners/PawnPromoteButtonHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ActionListeners/SelectionListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ActionListeners/SelectionListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/GUI/BoardGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI/BoardGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/GUI/MainPageGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI/MainPageGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/GUI/Move.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI/Move.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/GUI/PawnPromoteGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/GUI/PawnPromoteGUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Logic/ChessModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Logic/ChessModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Logic/Index.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Logic/Index.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Logic/Tempo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Logic/Tempo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Online/Account.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Online/Account.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Online/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Online/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Online/MatchMaking.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Online/MatchMaking.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Online/MoveNotation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Online/MoveNotation.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -208,7 +213,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759529252949</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="feat:&quot;The matchmaking algorithm has been completed,the MatchMaking class has been created,the code to start the games of paired players has been completed.&quot;">
+      <option name="closed" value="true" />
+      <created>1759698074659</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1759698074659</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -236,6 +249,28 @@
     <MESSAGE value="feat:&quot;The castling algorithm has been fixed, the Calculation and Game classes have been made compatible with the database, a MoveNotation class has been added, some adjustments have been made to improve the program's speed, and the fading in images when buttons are enabled has been fixed.&quot;" />
     <MESSAGE value="feat:&quot;The castling algorithm has been fixed, the Calculation and Game classes have been made compatible with the database, a MoveNotation class has been added, some adjustments have been made to improve the program's speed, matchmaking algorithm implemented, and the fading in images when buttons are enabled has been fixed.&quot;" />
     <MESSAGE value="feat:&quot;The Movenotation class has been added to GitHub, and unnecessary fields in the BoardGUI class have been removed.&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat:&quot;The Movenotation class has been added to GitHub, and unnecessary fields in the BoardGUI class have been removed.&quot;" />
+    <MESSAGE value="feat:&quot;The matchmaking algorithm has been completed,the MatchMaking class has been created,the code to start the games of paired players has been completed.&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat:&quot;The matchmaking algorithm has been completed,the MatchMaking class has been created,the code to start the games of paired players has been completed.&quot;" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/ActionListeners/BoardButtonHandler.java</url>
+          <line>38</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Logic/ChessModel.java</url>
+          <line>772</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Logic/ChessModel.java</url>
+          <line>782</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

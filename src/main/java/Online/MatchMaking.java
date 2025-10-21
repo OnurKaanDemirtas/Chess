@@ -2,7 +2,25 @@ package Online;
 
 public class MatchMaking {
     private int Rating;
-    private String playername;
+    private String playerName;
+    private int id;
+    private String accountId;
+
+    public String getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public int getRating() {
         return Rating;
@@ -12,23 +30,25 @@ public class MatchMaking {
         Rating = rating;
     }
 
-    public String getPlayername() {
-        return playername;
+    public String getPlayerName() {
+        return playerName;
     }
 
-    public void setPlayername(String playername) {
-        this.playername = playername;
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
     }
 
-    public MatchMaking(int rating, String playername) {
+    public MatchMaking(int rating, String playerName, int id, String accountId) {
         Rating = rating;
-        this.playername = playername;
+        this.playerName = playerName;
+        this.id = id;
+        this.accountId = accountId;
     }
 
     public MatchMaking() {
     }
 
     public String toString() {
-        return Rating+"-"+playername;
+        return Rating+"-"+ playerName;
     }
 }

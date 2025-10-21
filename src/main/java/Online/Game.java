@@ -3,16 +3,31 @@ package Online;
 import GUI.BoardGUI;
 import Logic.Tempo;
 
-import java.util.ArrayList;
-
 public class Game {
     private MatchMaking opponent;
     private MatchMaking player;
     private String color;
-    private int lastPositionthatDisplayed;
     private boolean gameFinished;
-    private Tempo tempoforplayer;
-    private Tempo tempoforopponent;
+    private Tempo tempoForPlayer;
+    private Tempo tempoForOpponent;
+    private String gameId;
+    private int numberOfMovesMade;
+
+    public int getNumberOfMovesMade() {
+        return numberOfMovesMade;
+    }
+
+    public void setNumberOfMovesMade(int numberOfMovesMade) {
+        this.numberOfMovesMade = numberOfMovesMade;
+    }
+
+    public String getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
+    }
 
     public MatchMaking getPlayer() {
         return player;
@@ -38,14 +53,6 @@ public class Game {
         this.color = color;
     }
 
-    public int getLastPositionthatDisplayed() {
-        return lastPositionthatDisplayed;
-    }
-
-    public void setLastPositionthatDisplayed(int lastPositionthatDisplayed) {
-        this.lastPositionthatDisplayed = lastPositionthatDisplayed;
-    }
-
     public boolean isGameFinished() {
         return gameFinished;
     }
@@ -54,36 +61,47 @@ public class Game {
         this.gameFinished = gameFinished;
     }
 
-    public Tempo getTempoforplayer() {
-        return tempoforplayer;
+    public Tempo getTempoForPlayer() {
+        return tempoForPlayer;
     }
 
-    public void setTempoforplayer(Tempo tempoforplayer) {
-        this.tempoforplayer = tempoforplayer;
+    public void setTempoForPlayer(Tempo tempoForPlayer) {
+        this.tempoForPlayer = tempoForPlayer;
     }
 
-    public Tempo getTempoforopponent() {
-        return tempoforopponent;
+    public Tempo getTempoForOpponent() {
+        return tempoForOpponent;
     }
 
-    public void setTempoforopponent(Tempo tempoforopponent) {
-        this.tempoforopponent = tempoforopponent;
+    public void setTempoForOpponent(Tempo tempoForOpponent) {
+        this.tempoForOpponent = tempoForOpponent;
     }
 
-    public Game(MatchMaking player,MatchMaking opponent, String color, Tempo tempoforplayer, Tempo tempoforopponent) {
-        this.lastPositionthatDisplayed =0;
+    public Game(MatchMaking player, MatchMaking opponent, String color, Tempo tempoForPlayer, Tempo tempoForOpponent) {
         this.color=color;
         this.opponent = opponent;
         this.gameFinished=false;
-        this.tempoforplayer=tempoforplayer;
-        this.tempoforopponent=tempoforopponent;
+        this.tempoForPlayer = tempoForPlayer;
+        this.tempoForOpponent = tempoForOpponent;
         this.player=player;
+        this.gameId=player.getId()+" ";
+        this.numberOfMovesMade=0;
     }
 
     public Game(){}
 
-    public void displayGame(){
-        BoardGUI boardGUI=new BoardGUI(color,opponent);
-        boardGUI.selecttimer(tempoforplayer,tempoforopponent);
+    public void displayGame(Game game){
+        BoardGUI boardGUI=new BoardGUI(color,game);
+        boardGUI.selectTimer(tempoForPlayer, tempoForOpponent);
+    }
+
+    public String toString(){
+        if(numberOfMovesMade<10) {
+            return "00" + numberOfMovesMade;
+        }else if(numberOfMovesMade<100){
+            return "0" + numberOfMovesMade;
+        }else{
+            return "" + numberOfMovesMade;
+        }
     }
 }

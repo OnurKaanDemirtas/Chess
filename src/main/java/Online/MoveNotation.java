@@ -5,14 +5,14 @@ import Logic.Index;
 public class MoveNotation {
     private Index from;
     private Index to;
-    private String promotionPiece;
+    private String promotionType;
 
-    public String getPromotionPiece() {
-        return promotionPiece;
+    public String getPromotionType() {
+        return promotionType;
     }
 
-    public void setPromotionPiece(String promotionPiece) {
-        this.promotionPiece = promotionPiece;
+    public void setPromotionType(String promotionType) {
+        this.promotionType = promotionType;
     }
 
     public Index getTo() {
@@ -31,9 +31,10 @@ public class MoveNotation {
         this.from = from;
     }
 
-    public MoveNotation(Index from,Index to){
+    public MoveNotation(Index from,Index to,String promotionType){
         this.from=from;
         this.to=to;
+        this.promotionType=promotionType;
     }
 
     public MoveNotation(){};

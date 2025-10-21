@@ -6,14 +6,14 @@ public class Account {
     private int id;
     private int Rating;
     private boolean online;
-    private int gamesize;
+    private int gameSize;
 
-    public int getGamesize() {
-        return gamesize;
+    public int getGameSize() {
+        return gameSize;
     }
 
-    public void setGamesize(int gamesize) {
-        this.gamesize = gamesize;
+    public void setGameSize(int gameSize) {
+        this.gameSize = gameSize;
     }
 
     public String getPassword() {
@@ -64,7 +64,7 @@ public class Account {
         this.Rating=1000;
         this.id=id;
         this.online=false;
-        this.gamesize=0;
+        this.gameSize=0;
     }
 
     @Override

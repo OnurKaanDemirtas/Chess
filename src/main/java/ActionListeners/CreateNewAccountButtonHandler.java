@@ -3,17 +3,20 @@ package ActionListeners;
 import GUI.CreateNewAccountGUI;
 import Online.Account;
 import Online.DatabaseSize;
-import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
-import com.google.cloud.firestore.QuerySnapshot;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+/**
+ * Creates a new account. Every account gets the next number from the
+ * DatabaseSize/size counter, so the documents are account0, account1, ...
+ */
 public class CreateNewAccountButtonHandler implements ActionListener {
     private final CreateNewAccountGUI createNewAccountGUI;
 
@@ -23,29 +26,37 @@ public class CreateNewAccountButtonHandler implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource()==createNewAccountGUI.getCreateAccountButton()){
-            String username=createNewAccountGUI.getNewUsernameTextField().getText();
-            String password=createNewAccountGUI.getNewPasswordTextField().getText();
-            if(!username.isEmpty()&&!password.isEmpty()){
-                try {
-                    Firestore database=createNewAccountGUI.getDatabase();
-                    ApiFuture<QuerySnapshot> future=database.collection("accounts").whereEqualTo("userName",username).get();
-                    List<QueryDocumentSnapshot> documents=future.get().getDocuments();
-                    if(!documents.isEmpty()){
-                        JOptionPane.showMessageDialog(createNewAccountGUI,"Username is already taken. Please choose another one.");
-                        return;
-                    }
-                    DocumentReference documentReference=database.collection("DatabaseSize").document("size");
-                    DatabaseSize databaseSize=documentReference.get().get().toObject(DatabaseSize.class);
+            String username=createNewAccountGUI.getNewUsernameTextField().getText().trim();
+            String password=new String(createNewAccountGUI.getNewPasswordTextField().getPassword());
+            if(username.isEmpty()||password.isEmpty()){
+                JOptionPane.showMessageDialog(createNewAccountGUI,"Please enter a valid username and password.");
+                return;
+            }
+            try {
+                Firestore database=createNewAccountGUI.getDatabase();
+                List<QueryDocumentSnapshot> documents=database.collection("accounts").whereEqualTo("userName",username).get().get().getDocuments();
+                if(!documents.isEmpty()){
+                    JOptionPane.showMessageDialog(createNewAccountGUI,"Username is already taken. Please choose another one.");
+                    return;
+                }
+                DocumentReference counter=database.collection("DatabaseSize").document("size");
+                // A transaction makes sure two people registering at the same time never get the same id.
+                // The counter document is created automatically on a fresh database.
+                Account newAccount=database.runTransaction(transaction -> {
+                    DocumentSnapshot snapshot=transaction.get(counter).get();
+                    DatabaseSize databaseSize=snapshot.exists() ? snapshot.toObject(DatabaseSize.class) : new DatabaseSize(0);
                     assert databaseSize != null;
                     int size=databaseSize.getSize();
-                    Account newAccount=new Account(username,password,size);
-                    database.collection("accounts").document(newAccount.toString()).set(newAccount).get();
-                    documentReference.update("size",size+1);
-                    createNewAccountGUI.dispose();
-                }catch (Exception ignored){
-                }
-            } else {
-                JOptionPane.showMessageDialog(createNewAccountGUI,"Please enter a valid username and password.");
+                    Account account=new Account(username,Account.hashPassword(password),size);
+                    transaction.set(database.collection("accounts").document(account.toString()),account);
+                    transaction.set(counter,new DatabaseSize(size+1));
+                    return account;
+                }).get();
+                JOptionPane.showMessageDialog(createNewAccountGUI,"Account \""+newAccount.getUserName()+"\" created. You can log in now.");
+                createNewAccountGUI.dispose();
+            }catch (Exception ex){
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(createNewAccountGUI,"Could not create the account: "+ex.getMessage());
             }
         }
     }

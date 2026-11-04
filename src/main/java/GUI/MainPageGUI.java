@@ -2,14 +2,18 @@ package GUI;
 
 import ActionListeners.MainPageButtonHandler;
 import Online.Account;
-import com.google.cloud.firestore.Firestore;
 
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * The menu shown after logging in: the four time controls on top
+ * (1+1 = 1 minute + 1 second per move) and the other options below.
+ */
 public class MainPageGUI extends JFrame {
-    
+
     public MainPageGUI(Account player){
+        super("Chess - "+player.getUserName()+" ("+player.getRating()+")");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new GridLayout(2, 1, 10, 10));
         JPanel selectTempoPanel = new JPanel();
@@ -41,6 +45,16 @@ public class MainPageGUI extends JFrame {
         GameArchive.addActionListener(mainPageButtonHandler);
         logoutButton.addActionListener(mainPageButtonHandler);
         profileButton.addActionListener(mainPageButtonHandler);
+        for(JButton button : new JButton[]{oneplusone, threeplustwo, fiveplusthree, tenpluszero, leaderboardButton, GameArchive, profileButton, logoutButton}){
+            // without this the macOS look-and-feel ignores the button colors
+            button.setOpaque(true);
+            button.setBorderPainted(false);
+            button.setFont(button.getFont().deriveFont(Font.BOLD, 15f));
+        }
+        oneplusone.setFont(oneplusone.getFont().deriveFont(Font.BOLD, 22f));
+        threeplustwo.setFont(oneplusone.getFont());
+        fiveplusthree.setFont(oneplusone.getFont());
+        tenpluszero.setFont(oneplusone.getFont());
         selectTempoPanel.add(oneplusone);
         selectTempoPanel.add(threeplustwo);
         selectTempoPanel.add(fiveplusthree);

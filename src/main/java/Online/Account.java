@@ -1,5 +1,14 @@
 package Online;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
+
+/**
+ * A player account, stored in Firestore as accounts/account{id}.
+ * Firestore maps this class through its getters and setters, so it needs the empty constructor.
+ */
 public class Account {
     private String userName;
     private String password;
@@ -56,7 +65,7 @@ public class Account {
         this.userName = userName;
     }
 
-    public Account(){};
+    public Account(){}
 
     public Account(String userName,String password,int id){
         this.userName=userName;
@@ -67,8 +76,22 @@ public class Account {
         this.gameSize=0;
     }
 
+    /** Firestore document id of this account. */
     @Override
     public String toString() {
         return "account"+id;
+    }
+
+    /**
+     * Passwords are never stored as plain text, only as their SHA-256 hash.
+     * (Fine for a hobby project; a real app should use Firebase Authentication.)
+     */
+    public static String hashPassword(String password) {
+        try {
+            byte[] hash = MessageDigest.getInstance("SHA-256").digest(password.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 is not available", e);
+        }
     }
 }

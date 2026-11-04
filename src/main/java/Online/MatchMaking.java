@@ -1,5 +1,10 @@
 package Online;
 
+/**
+ * A player waiting in a matchmaking queue. It is also stored inside each Game as
+ * "player" and "opponent", so it keeps the rating at the time of the match,
+ * the number of the game (id) and the Firestore account id.
+ */
 public class MatchMaking {
     private int Rating;
     private String playerName;

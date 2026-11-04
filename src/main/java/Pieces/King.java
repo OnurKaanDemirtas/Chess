@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+/** The king also remembers who is checking it and where it can castle (and with which rook). */
 public class King extends Piece{
     private ArrayList<Piece> piecesthatcheck;
     private int howmanytimesitmoved;
@@ -36,9 +37,5 @@ public class King extends Piece{
         this.howmanytimesitmoved = 0;
         this.castableplaces = new ArrayList<>();
         this.castablerooks = new ArrayList<>();
-    }
-
-    public void refreshpiecesthatcheck(){
-        piecesthatcheck.subList(0, piecesthatcheck.size()).clear();
     }
 }

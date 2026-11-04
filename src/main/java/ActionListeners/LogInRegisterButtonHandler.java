@@ -14,6 +14,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+/**
+ * Logs the player in (or opens the "create account" dialog).
+ * The password is compared by its hash, see Account.hashPassword.
+ */
 public class LogInRegisterButtonHandler implements ActionListener {
     private LogInRegisterGUI LogInRegisterGUI;
 
@@ -24,7 +28,7 @@ public class LogInRegisterButtonHandler implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         if (event.getSource()== LogInRegisterGUI.getLogInButton()) {
             try {
-                ApiFuture<QuerySnapshot> future = FireBaseConnection.getDatabase().collection("accounts").whereEqualTo("userName", LogInRegisterGUI.getUsernameTextField().getText()).whereEqualTo("password", LogInRegisterGUI.getPasswordTextField().getText()).get();
+                ApiFuture<QuerySnapshot> future = FireBaseConnection.getDatabase().collection("accounts").whereEqualTo("userName", LogInRegisterGUI.getUsernameTextField().getText()).whereEqualTo("password", Account.hashPassword(new String(LogInRegisterGUI.getPasswordTextField().getPassword()))).get();
                 List<QueryDocumentSnapshot> documents =future.get().getDocuments();
                 if (!documents.isEmpty()) {
                     JOptionPane.showMessageDialog(LogInRegisterGUI, "Login Successful");
@@ -45,7 +49,8 @@ public class LogInRegisterButtonHandler implements ActionListener {
                     JOptionPane.showMessageDialog(LogInRegisterGUI, "Login Failed. Please check your username and password.");
                 }
             }catch (Exception ex){
-                JOptionPane.showMessageDialog(LogInRegisterGUI,"Login failed! Please try again");
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(LogInRegisterGUI,"Login failed! Please try again.\n"+ex.getMessage());
             }
         } else if(event.getSource()== LogInRegisterGUI.getCreateNewAccountButton()) {
             new CreateNewAccountGUI(LogInRegisterGUI);

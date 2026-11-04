@@ -27,3 +27,15 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+### Maven ###
+target/
+
+### IntelliJ (personal files) ###
+.idea/workspace.xml
+.idea/shelf/
+
+### Secrets ###
+# Firebase service-account key: never commit this
+src/main/resources/fireStoreConnectionKey.json
+*serviceAccount*.json
+*-firebase-adminsdk-*.json

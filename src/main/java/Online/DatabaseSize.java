@@ -1,5 +1,6 @@
 package Online;
 
+/** The DatabaseSize/size document: a counter used to give each new account a unique id. */
 public class DatabaseSize {
     private int size;
 

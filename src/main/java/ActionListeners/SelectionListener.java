@@ -6,6 +6,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.util.ArrayList;
 
+/**
+ * When a move is selected in the move list, shows the saved board of that move
+ * instead of the live board. Selecting the latest move shows the live board again.
+ */
 public class SelectionListener implements ListSelectionListener {
     private final BoardGUI boardGUI;
     private final ArrayList<Move> moves;

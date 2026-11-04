@@ -3,6 +3,7 @@ package PieceIcons;
 import javax.swing.*;
 import java.awt.*;
 
+/** The green circle drawn on the squares the selected piece can move to. */
 public class CircleIcon implements Icon {
     private int diameter;
     private Color color;

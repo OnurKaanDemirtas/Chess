@@ -4,6 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * Pawns need extra lists: the squares they attack (diagonals, used to see if a king may go there)
+ * and the squares of enemy pawns they can take en passant.
+ */
 public class Pawn extends Piece{
     private int howmanytimesitmoved;
     private ArrayList<JButton> attackingplaces;

@@ -2,6 +2,7 @@ package Online;
 
 import Logic.Index;
 
+/** One move as it is stored in Firestore: from-square, to-square and the promotion choice (if any). */
 public class MoveNotation {
     private Index from;
     private Index to;
@@ -37,5 +38,5 @@ public class MoveNotation {
         this.promotionType=promotionType;
     }
 
-    public MoveNotation(){};
+    public MoveNotation(){}
 }

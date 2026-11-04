@@ -1,5 +1,6 @@
 package Logic;
 
+/** A clock: remaining seconds and the increment added after every move (3+2 = 180 s + 2 s). */
 public class Tempo {
     private int remainingTime;
     private int timeToAddedForEachMove;

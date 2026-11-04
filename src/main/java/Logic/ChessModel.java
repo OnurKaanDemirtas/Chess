@@ -1,21 +1,46 @@
 package Logic;
-import GUI.BoardGUI;
+
+import PieceIcons.IconLoader;import GUI.BoardGUI;
 import GUI.Move;
 import GUI.PawnPromoteGUI;
 import Online.FireBaseConnection;
+import Online.GameResult;
 import Online.MoveNotation;
 import Pieces.*;
+import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+/**
+ * The chess rules. The board is the 8x8 grid of buttons; a piece "is" on a square
+ * when its button is that square's button.
+ *
+ * The flow after every move:
+ *  1. findPlayablePlaces(...) calculates the pseudo-legal moves of every piece
+ *     (and, as a side effect, which enemy pieces give check and which pieces protect each other).
+ *  2. arrangeThePlayablePlaces(...) tries each of those moves on the board and removes the
+ *     ones that would leave the own king in check (pins, moving into check, ignoring a check).
+ *  3. isItCheckmate(...) checks if the side to move has any move left.
+ *  4. The draw rules are checked: insufficient material, the 50-move rule and threefold repetition.
+ *
+ * Coordinates: Index(row, column) with row 0 = 8th rank and column 0 = a-file.
+ */
 public class ChessModel {
     private final ArrayList<Piece> blackPieces;
     private final  ArrayList<Piece> whitePieces;
     private final JButton [][] boardButtons;
     private final BoardGUI boardGUI;
+    /** Half-moves since the last capture or pawn move (50-move rule: draw at 100). */
+    private int halfmoveClock;
+    /** How many times each position has appeared (threefold repetition). */
+    private final Map<String, Integer> positionCounts = new HashMap<>();
 
     public ChessModel(ArrayList<Piece> blackPieces, ArrayList<Piece> whitePieces, ArrayList<JButton> boardButtons, BoardGUI boardGUI){
         this.blackPieces = blackPieces;
@@ -33,6 +58,11 @@ public class ChessModel {
                 arrangeThePlayablePlaces(whitePieces, blackPieces, king);
             }
         }
+        positionCounts.put(positionKey(whitePieces, blackPieces), 1); // the starting position counts too
+    }
+
+    public int getHalfmoveClock(){
+        return halfmoveClock;
     }
     public Index findIndex(JButton wantedButton){
         for(int row=0;row<8;row++){
@@ -74,6 +104,7 @@ public class ChessModel {
         }
         return null;
     }
+    /** A king may not step next to the enemy king, onto an attacked square or onto a protected piece. */
     private boolean canKingMoveToThatIndex(ArrayList<Piece> enemyPieces, Index indexThatWantingToMoveTo){
         Piece enemypiece=isthereaenemypiece(indexThatWantingToMoveTo, enemyPieces);
         if(enemypiece!=null){
@@ -99,6 +130,11 @@ public class ChessModel {
         return true;
     }
 
+    /**
+     * Calculates the moves of every piece in the list without caring about checks on its own king.
+     * Also fills the enemy king's "pieces that check" list and each piece's "supporting pieces"
+     * (friendly pieces that protect it, so the enemy king cannot capture it).
+     */
     public void findPlayablePlaces(ArrayList<Piece> pieces) {
         ArrayList<Piece> enemyPieces;
         if (pieces.equals(whitePieces)) {
@@ -157,6 +193,11 @@ public class ChessModel {
         }
     }
 
+    /**
+     * Removes the moves that would leave the own king in check: every move is made temporarily
+     * (capturing the enemy piece on the target square if needed), the enemy moves are
+     * recalculated and the move is dropped if the king is attacked. Then the board is put back.
+     */
     public void arrangeThePlayablePlaces(ArrayList<Piece> pieces, ArrayList<Piece> enemyPieces, King king) {
         for (Piece piece : pieces) {
             JButton button = piece.getButton();
@@ -179,6 +220,7 @@ public class ChessModel {
             }
         }
     }
+    /** @return 0 = checkmate, 1 = stalemate, 2 = the game goes on */
     public int isItCheckmate(ArrayList<Piece> pieces){
         King king = null;
         for(Piece piece : pieces) {
@@ -302,6 +344,12 @@ public class ChessModel {
             }
         }
     }
+    /**
+     * Pawn moves: one step forward (two on its first move), diagonal captures and en passant.
+     * En passant: an enemy pawn that has moved exactly once (howmanytimesitmoved==1) and stands
+     * next to our pawn on the 5th rank (4th for black) has just made a double step. move() bumps
+     * the counter of every pawn after the next move, so en passant is only allowed right away.
+     */
     private void calculatePlayablePlacesForPawn(Pawn pawn, ArrayList<Piece> pieces, ArrayList<Piece> enemyPieces){
         Index indexOfPiece=findIndex(pawn.getButton());
         if(pawn.getColor().equals(Color.WHITE)){
@@ -388,6 +436,10 @@ public class ChessModel {
             }
         }
     }
+    /**
+     * King moves plus castling. Castling is allowed when neither the king nor the rook has moved,
+     * the king is not in check and the square the king passes over is free and not attacked.
+     */
     public void calculatePlayablePlacesForKing(King king, ArrayList<Piece> pieces, ArrayList<Piece> enemyPieces){
         Index indexOfKing = findIndex(king.getButton());
         Index[] indexesForCalculate = {
@@ -428,16 +480,18 @@ public class ChessModel {
     }
     private boolean canPlayerDoCastling(Index indexOfKing, Index indexOfRook, ArrayList<Piece> pieces, ArrayList<Piece> enemyPieces, King king){
         int direction = (indexOfRook.getColumn() - indexOfKing.getColumn()) > 0 ? 1 : -1;
-        for(int a = 1; a < 2; a++){
-            int col = indexOfKing.getColumn() + direction * a;
-            Index temporaryindex = new Index(indexOfKing.getRow(), col);
-            if(isThereAFriendPiece(temporaryindex, pieces, king)){
+        int distanceToRook = Math.abs(indexOfRook.getColumn() - indexOfKing.getColumn());
+        // every square between the king and the rook must be empty
+        for(int a = 1; a < distanceToRook; a++){
+            Index temporaryindex = new Index(indexOfKing.getRow(), indexOfKing.getColumn() + direction * a);
+            if(isThereAFriendPieceInThisRoad(temporaryindex, pieces) || isthereaenemypiece(temporaryindex, enemyPieces) != null){
                 return false;
             }
-            Piece enemypiece = isthereaenemypiece(temporaryindex, enemyPieces);
-            if(enemypiece != null) {
-                return false;
-            }
+        }
+        // the king may not pass over or land on an attacked square
+        for(int a = 1; a <= 2; a++){
+            Index temporaryindex = new Index(indexOfKing.getRow(), indexOfKing.getColumn() + direction * a);
+            JButton square = boardButtons[temporaryindex.getRow()][temporaryindex.getColumn()];
             for(Piece enemy : enemyPieces){
                 if(enemy instanceof King){
                     Index indexOfEnemyKing = findIndex(enemy.getButton());
@@ -445,15 +499,25 @@ public class ChessModel {
                             Math.abs(temporaryindex.getColumn() - indexOfEnemyKing.getColumn()) <= 1){
                         return false;
                     }
-                }else{
-                    if(enemy.getPlaybleplaces().contains(boardButtons[temporaryindex.getRow()][temporaryindex.getColumn()])){
+                }else if(enemy instanceof Pawn pawn){
+                    if(pawn.getAttackingplaces().contains(square)){ // pawns attack diagonally, not where they move
                         return false;
                     }
+                }else if(enemy.getPlaybleplaces().contains(square)){
+                    return false;
                 }
             }
         }
         return true;
     }
+    /**
+     * Moves a piece on the board and updates everything that depends on it: captures,
+     * en passant, promotion, castling, clocks, the move list, the end of the game
+     * and (in online games) saving the move to Firestore.
+     *
+     * @param promotionType null for a local move (the promotion dialog asks the player),
+     *                      or the piece chosen by the opponent / stored in a replay
+     */
     public void move(Piece selectedpiece, JButton clickedButton, String promotionType){
         Index from=findIndex(selectedpiece.getButton());
         Index to=findIndex(clickedButton);
@@ -493,53 +557,37 @@ public class ChessModel {
         }else{
             enemypiece=isthereaenemypiece(indexOfClickedButton, whitePieces);
         }
+        // 50-move rule: a capture or any pawn move (en passant and promotions included) resets the count
+        if(enemypiece!=null||selectedpiece instanceof Pawn){
+            halfmoveClock=0;
+        }else{
+            halfmoveClock++;
+        }
         if(enemypiece!=null){
             if(enemypiece.getColor().equals(Color.BLACK)){
-                String count;
                 if(enemypiece instanceof Queen){
-                    count=boardGUI.getTakenBlackQueenCount().getText();
-                    String newCount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
-                    boardGUI.getTakenBlackQueenCount().setText(newCount);
+                    increaseCount(boardGUI.getTakenBlackQueenCount());
                 } else if (enemypiece instanceof Rook) {
-                    count = boardGUI.getTakenBlackRookCount().getText();
-                    String newCount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
-                    boardGUI.getTakenBlackRookCount().setText(newCount);
+                    increaseCount(boardGUI.getTakenBlackRookCount());
                 } else if (enemypiece instanceof Bishop) {
-                    count = boardGUI.getTakenBlackBishopCount().getText();
-                    String newCount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
-                    boardGUI.getTakenBlackBishopCount().setText(newCount);
+                    increaseCount(boardGUI.getTakenBlackBishopCount());
                 } else if (enemypiece instanceof Knight) {
-                    count = boardGUI.getTakenBlackKnightCount().getText();
-                    String newCount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
-                    boardGUI.getTakenBlackKnightCount().setText(newCount);
+                    increaseCount(boardGUI.getTakenBlackKnightCount());
                 } else if (enemypiece instanceof Pawn) {
-                    count = boardGUI.getTakenBlackPawnCount().getText();
-                    String newCount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
-                    boardGUI.getTakenBlackPawnCount().setText(newCount);
+                    increaseCount(boardGUI.getTakenBlackPawnCount());
                 }
                 blackPieces.remove(enemypiece);
             }else{
-                String count;
                 if(enemypiece instanceof Queen){
-                    count=boardGUI.getTakenWhiteQueenCount().getText();
-                    String newCount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
-                    boardGUI.getTakenWhiteQueenCount().setText(newCount);
+                    increaseCount(boardGUI.getTakenWhiteQueenCount());
                 } else if (enemypiece instanceof Rook) {
-                    count = boardGUI.getTakenWhiteRookCount().getText();
-                    String newCount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
-                    boardGUI.getTakenWhiteRookCount().setText(newCount);
+                    increaseCount(boardGUI.getTakenWhiteRookCount());
                 } else if (enemypiece instanceof Bishop) {
-                    count = boardGUI.getTakenWhiteBishopCount().getText();
-                    String newCount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
-                    boardGUI.getTakenWhiteBishopCount().setText(newCount);
+                    increaseCount(boardGUI.getTakenWhiteBishopCount());
                 } else if (enemypiece instanceof Knight) {
-                    count = boardGUI.getTakenWhiteKnightCount().getText();
-                    String newCount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
-                    boardGUI.getTakenWhiteKnightCount().setText(newCount);
+                    increaseCount(boardGUI.getTakenWhiteKnightCount());
                 } else if (enemypiece instanceof Pawn) {
-                    count = boardGUI.getTakenWhitePawnCount().getText();
-                    String newCount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
-                    boardGUI.getTakenWhitePawnCount().setText(newCount);
+                    increaseCount(boardGUI.getTakenWhitePawnCount());
                 }
                 whitePieces.remove(enemypiece);
             }
@@ -565,15 +613,14 @@ public class ChessModel {
                     indexOfEnPassant = new Index(indexOfEnPassant.getRow() - 1, indexOfEnPassant.getColumn());
                 }
                 if (pawn.getEnpassantplaces().contains(boardButtons[indexOfEnPassant.getRow()][indexOfEnPassant.getColumn()])) {
+                    pieceTakingNotation = (char) ('a' + indexOfSelectedPiece.getColumn()) + "x";
                     if(selectedpiece.getColor().equals(Color.WHITE)){
                         Piece takenPawn = isthereaenemypiece(indexOfEnPassant, blackPieces);
                         assert takenPawn != null;
                         takenPawn.getButton().setIcon(null);
                         takenPawn.getButton().setDisabledIcon(null);
                         takenPawn.setButton(null);
-                        String count = boardGUI.getTakenBlackPawnCount().getText();
-                        String newCount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
-                        boardGUI.getTakenBlackPawnCount().setText(newCount);
+                        increaseCount(boardGUI.getTakenBlackPawnCount());
                         blackPieces.remove(takenPawn);
                     }else{
                         Piece takenPawn = isthereaenemypiece(indexOfEnPassant, whitePieces);
@@ -581,13 +628,14 @@ public class ChessModel {
                         takenPawn.getButton().setIcon(null);
                         takenPawn.getButton().setDisabledIcon(null);
                         takenPawn.setButton(null);
-                        String count = boardGUI.getTakenWhitePawnCount().getText();
-                        String newCount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
-                        boardGUI.getTakenWhitePawnCount().setText(newCount);
+                        increaseCount(boardGUI.getTakenWhitePawnCount());
                         whitePieces.remove(takenPawn);
                     }
                 }
                 if (indexOfClickedButton.getRow() == 0 || indexOfClickedButton.getRow() == 7) {
+                    if (promotionType==null && boardGUI.isReplay()) {
+                        promotionType="Queen"; // very old games did not store the choice
+                    }
                     if (selectedpiece.getColor().equals(Color.WHITE)) {
                         if(promotionType!=null) {
                             promote(promotionType, clickedButton, selectedpiece.getColor(), whitePieces);
@@ -605,14 +653,10 @@ public class ChessModel {
                     }
                     if (selectedpiece.getColor().equals(Color.WHITE)) {
                         whitePieces.remove(selectedpiece);
-                        String count = boardGUI.getTakenWhitePawnCount().getText();
-                        String newCount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
-                        boardGUI.getTakenWhitePawnCount().setText(newCount);
+                        increaseCount(boardGUI.getTakenWhitePawnCount());
                     } else {
                         blackPieces.remove(selectedpiece);
-                        String count = boardGUI.getTakenBlackPawnCount().getText();
-                        String newCount ="x"+ (Integer.parseInt(count.substring(1)) + 1);
-                        boardGUI.getTakenBlackPawnCount().setText(newCount);
+                        increaseCount(boardGUI.getTakenBlackPawnCount());
                     }
                 }
                 pawn.increasehowmanytimesitmoved();
@@ -654,189 +698,215 @@ public class ChessModel {
         for(JButton button:selectedpiece.getPlaybleplaces()){
             button.setEnabled(false);
         }
-        if(selectedpiece.getColor().equals(Color.WHITE)){
-            boardGUI.getWhitetempo().setRemainingTime(boardGUI.getWhitetempo().getRemainingTime()+boardGUI.getWhitetempo().getTimeToAddedForEachMove());
-            int minute=boardGUI.getWhitetempo().getRemainingTime()/60;
-            int second=boardGUI.getWhitetempo().getRemainingTime()-60*minute;
-            String m=minute+"";
-            String s=second+"";
-            if(minute<10){
-                m=0+""+minute;
-            }
-            if(second<10){
-                s=0+""+second;
-            }
-            boardGUI.getWhiteTimerLabel().setText(m+":"+s);
-            boardGUI.getWhitetimer().stop();
-            boardGUI.getBlacktimer().start();
-            findPlayablePlaces(whitePieces);
-            findPlayablePlaces(blackPieces);
-            arrangeThePlayablePlaces(blackPieces, whitePieces,BlackKing);
-            if(BlackKing!=null&&!BlackKing.getPiecesthatcheck().isEmpty()){
-                checkNotation="+";
-            }
-            if(isItCheckmate(blackPieces)==0) {
-                for(Piece piece: blackPieces){
-                    piece.getButton().setEnabled(false);
-                    if(piece instanceof King){
-                        piece.getButton().setBackground(Color.red);
-                    }
-                }
-                boardGUI.getBlacktimer().stop();
-                JOptionPane.showMessageDialog(null, "White wins!");
-                checkNotation="#";
-            }else if(isItCheckmate(blackPieces)==1) {
-                for(Piece piece: blackPieces){
-                    piece.getButton().setEnabled(false);
-                }
-                boardGUI.getBlacktimer().stop();
-                JOptionPane.showMessageDialog(null, "Stalemate!");
-            }
-            Move move;
-            if(rookNotation!=null) {
-                move = new Move(boardGUI, rookNotation);
-            }else {
-                move = new Move(boardGUI, selectedpiece.getPiecetype()+pieceTakingNotation+playedSquareNotation+promoteNotation+checkNotation);
-            }
-            boardGUI.getWhiteMovesListModel().addElement(move);
-            boardGUI.getWhiteMovesList().setSelectedIndex(boardGUI.getWhiteMovesListModel().getSize()-1);
-        } else {
-            boardGUI.getBlacktempo().setRemainingTime(boardGUI.getBlacktempo().getRemainingTime()+boardGUI.getBlacktempo().getTimeToAddedForEachMove());
-            int minute=boardGUI.getBlacktempo().getRemainingTime()/60;
-            int second=boardGUI.getBlacktempo().getRemainingTime()-60*minute;
-            String m=minute+"";
-            String s=second+"";
-            if(minute<10){
-                m=0+""+minute;
-            }
-            if(second<10){
-                s=0+""+second;
-            }
-            boardGUI.getBlackTimerLabel().setText(m+":"+s);
-            boardGUI.getBlacktimer().stop();
-            boardGUI.getWhitetimer().start();
-            findPlayablePlaces(blackPieces);
-            findPlayablePlaces(whitePieces);
-            arrangeThePlayablePlaces(whitePieces, blackPieces,WhiteKing);
-            if(WhiteKing!=null&&!WhiteKing.getPiecesthatcheck().isEmpty()){
-                checkNotation="+";
-            }
-            if(isItCheckmate(whitePieces)==0) {
-                for(Piece piece: whitePieces){
-                    piece.getButton().setEnabled(false);
-                    if(piece instanceof King){
-                        piece.getButton().setBackground(Color.red);
-                    }
-                }
-                boardGUI.getWhitetimer().stop();
-                JOptionPane.showMessageDialog(null, "Black wins!");
-                checkNotation="#";
-            } else if (isItCheckmate(whitePieces)==1) {
-                boardGUI.getWhitetimer().stop();
-                JOptionPane.showMessageDialog(null, "Stalemate!");
-            }
-            Move move;
-            if(rookNotation!=null) {
-                move = new Move(boardGUI, rookNotation);
-            }else {
-                move = new Move(boardGUI, selectedpiece.getPiecetype()+pieceTakingNotation+playedSquareNotation+promoteNotation+checkNotation);
-            }
-            boardGUI.getBlackMovesListModel().addElement(move);
-            boardGUI.getBlackMovesList().setSelectedIndex(boardGUI.getBlackMovesListModel().getSize()-1);
+        boolean whiteMoved=selectedpiece.getColor().equals(Color.WHITE);
+        ArrayList<Piece> movedPieces=whiteMoved ? whitePieces : blackPieces;
+        ArrayList<Piece> otherPieces=whiteMoved ? blackPieces : whitePieces;
+        King otherKing=whiteMoved ? BlackKing : WhiteKing;
+        boardGUI.switchClock(whiteMoved);
+        // Recalculate every legal move, then remove the ones that would leave the
+        // side to move in check. After that we can tell check, mate and stalemate.
+        findPlayablePlaces(movedPieces);
+        findPlayablePlaces(otherPieces);
+        arrangeThePlayablePlaces(otherPieces, movedPieces, otherKing);
+        // arrangeThePlayablePlaces tries every reply on the board, so the king's list of
+        // checking pieces now belongs to the last tried position. Recalculate it for the real one.
+        findPlayablePlaces(movedPieces);
+        if(otherKing!=null&&!otherKing.getPiecesthatcheck().isEmpty()){
+            checkNotation="+";
         }
-        if(boardGUI.getColorOfThePlayer().equals("W")) {
-            for(Piece piece : whitePieces) {
-                piece.getButton().setEnabled(true);
+        String endResult=null;   // result for THIS client's player, null if the game goes on
+        String endMessage=null;
+        int state=isItCheckmate(otherPieces);
+        if(state==0) {
+            if(otherKing!=null){
+                otherKing.getButton().setBackground(Color.red);
             }
-        }else{
-            for(Piece piece : blackPieces) {
+            checkNotation="#";
+            boolean playerWon=boardGUI.getColorOfThePlayer().equals(whiteMoved ? "W" : "B");
+            endResult=playerWon ? GameResult.WIN : GameResult.LOSS;
+            endMessage=(whiteMoved ? "White" : "Black")+" wins by checkmate!";
+        }else if(state==1) {
+            endResult=GameResult.DRAW;
+            endMessage="Stalemate! The game is a draw.";
+        }else if(isInsufficientMaterial()) {
+            endResult=GameResult.DRAW;
+            endMessage="Draw! Neither side has enough pieces left to checkmate.";
+        }else if(halfmoveClock>=100) {
+            endResult=GameResult.DRAW;
+            endMessage="Draw by the 50-move rule (50 moves each without a capture or pawn move).";
+        }else if(positionCounts.merge(positionKey(otherPieces, movedPieces), 1, Integer::sum)>=3) {
+            endResult=GameResult.DRAW;
+            endMessage="Draw by threefold repetition.";
+        }
+        String notation=rookNotation!=null ? rookNotation+checkNotation
+                : selectedpiece.getPiecetype()+pieceTakingNotation+playedSquareNotation+promoteNotation(moveNotation, promotionType)+checkNotation;
+        Move move=new Move(boardGUI, notation);
+        JList<Move> movesList=whiteMoved ? boardGUI.getWhiteMovesList() : boardGUI.getBlackMovesList();
+        DefaultListModel<Move> movesListModel=whiteMoved ? boardGUI.getWhiteMovesListModel() : boardGUI.getBlackMovesListModel();
+        movesListModel.addElement(move);
+        movesList.setSelectedIndex(movesListModel.getSize()-1);
+        // the player's own pieces stay enabled so their icons don't fade; BoardButtonHandler checks whose turn it is
+        if(!boardGUI.isReplay()&&!boardGUI.getGame().isGameFinished()&&endResult==null){
+            for(Piece piece : boardGUI.getColorOfThePlayer().equals("W") ? whitePieces : blackPieces) {
                 piece.getButton().setEnabled(true);
             }
         }
         boardGUI.getGame().setNumberOfMovesMade(boardGUI.getGame().getNumberOfMovesMade()+1);
-        FireBaseConnection.getDatabase().collection("accounts").document(boardGUI.getGame().getPlayer().getAccountId()).collection("gameArchive").document(boardGUI.getGame().getPlayer().getId()+" ").update("numberOfMovesMade", boardGUI.getGame().toString());
-        try{
-            FireBaseConnection.getDatabase().collection("accounts").document(boardGUI.getGame().getPlayer().getAccountId()).collection("gameArchive").document(boardGUI.getGame().getPlayer().getId()+" ").collection("moves").document(String.valueOf(boardGUI.getGame().toString())).set(moveNotation).get();
-        }catch (Exception ignored){
+        if(!boardGUI.isReplay()) {
+            saveMove(moveNotation);
         }
-        selectedpiece.getButton().setEnabled(boardGUI.getColorOfThePlayer().equals(boardGUI.getBoardButtonHandler().getWhoseTurnIsIt()));
+        selectedpiece.getButton().setEnabled(!boardGUI.isReplay()&&endResult==null&&boardGUI.getColorOfThePlayer().equals(boardGUI.getBoardButtonHandler().getWhoseTurnIsIt()));
         boardGUI.getFrame().validate();
+        if(endResult!=null) {
+            GameResult.finishGame(boardGUI, endResult, endMessage);
+        }
     }
-    public void move(DocumentSnapshot documentSnapshot){
-        try{
-            MoveNotation moveNotation=documentSnapshot.toObject(MoveNotation.class);
-            if(boardGUI.getColorOfThePlayer().equals("B")){
-                for(Piece piece: whitePieces){
-                    Index indexOfButton=findIndex(piece.getButton());
-                    assert moveNotation != null;
-                    if(moveNotation.getFrom().getColumn()==indexOfButton.getColumn()&&moveNotation.getFrom().getRow()==indexOfButton.getRow()){
-                        move(piece, boardButtons[moveNotation.getTo().getRow()][moveNotation.getTo().getColumn()],moveNotation.getPromotionType());
-                        boardGUI.getBoardButtonHandler().setWhoseTurnIsIt("B");
-                        break;
-                    }
-                }
-            }else{
-                for(Piece piece: blackPieces){
-                    Index indexOfButton=findIndex(piece.getButton());
-                    assert moveNotation != null;
-                    if(moveNotation.getFrom().getColumn()==indexOfButton.getColumn()&&moveNotation.getFrom().getRow()==indexOfButton.getRow()){
-                        move(piece, boardButtons[moveNotation.getTo().getRow()][moveNotation.getTo().getColumn()], moveNotation.getPromotionType());
-                        boardGUI.getBoardButtonHandler().setWhoseTurnIsIt("W");
-                        break;
-                    }
+
+    /**
+     * A text description of the position for the repetition rule. Two positions are the same when
+     * the same pieces stand on the same squares, the same side is to move, and the castling and
+     * en passant possibilities are the same.
+     *
+     * @param sideToMove the pieces of the player who moves next (their moves must already be calculated)
+     */
+    private String positionKey(ArrayList<Piece> sideToMove, ArrayList<Piece> otherSide){
+        String[] squares=new String[64];
+        StringBuilder rights=new StringBuilder();
+        for(ArrayList<Piece> pieces : List.of(whitePieces, blackPieces)){
+            for(Piece piece : pieces){
+                Index index=findIndex(piece.getButton());
+                String letter=piece.getPiecetype().isEmpty() ? "P" : piece.getPiecetype();
+                squares[index.getRow()*8+index.getColumn()]=piece.getColor().equals(Color.WHITE) ? letter : letter.toLowerCase();
+                // castling rights: unmoved kings and rooks
+                if((piece instanceof King king&&king.getHowmanytimesitmoved()==0)||(piece instanceof Rook rook&&rook.getHowmanytimesitmoved()==0)){
+                    rights.append(piece.getPiecetype()).append(index.getRow()).append(index.getColumn()).append(' ');
                 }
             }
-        }catch (Exception ignored){
+        }
+        // en passant: only the pawns of the side to move can use it, and only right now
+        for(Piece piece : sideToMove){
+            if(piece instanceof Pawn pawn){
+                for(JButton square : pawn.getEnpassantplaces()){
+                    Index index=findIndex(square);
+                    rights.append("ep").append(index.getRow()).append(index.getColumn()).append(' ');
+                }
+            }
+        }
+        String toMove=sideToMove==whitePieces ? "w" : "b";
+        return String.join(",", Arrays.stream(squares).map(x -> x==null ? "." : x).toList())+"|"+toMove+"|"+rights;
+    }
+
+    /**
+     * True when neither side can possibly checkmate: king vs king, king and one minor piece
+     * (bishop or knight) vs king, or king and bishop vs king and bishop with both bishops
+     * on squares of the same color.
+     */
+    private boolean isInsufficientMaterial(){
+        ArrayList<Piece> remaining=new ArrayList<>();
+        for(ArrayList<Piece> pieces : List.of(whitePieces, blackPieces)){
+            for(Piece piece : pieces){
+                if(piece instanceof King){
+                    continue;
+                }
+                if(!(piece instanceof Bishop)&&!(piece instanceof Knight)){
+                    return false; // a pawn, rook or queen can always still mate
+                }
+                remaining.add(piece);
+            }
+        }
+        if(remaining.size()<=1){
+            return true;
+        }
+        if(remaining.size()==2&&remaining.get(0) instanceof Bishop&&remaining.get(1) instanceof Bishop
+                &&!remaining.get(0).getColor().equals(remaining.get(1).getColor())){
+            Index first=findIndex(remaining.get(0).getButton());
+            Index second=findIndex(remaining.get(1).getButton());
+            return (first.getRow()+first.getColumn())%2==(second.getRow()+second.getColumn())%2;
+        }
+        return false;
+    }
+
+    /** "=Q" style suffix for promotions, "" otherwise. */
+    private String promoteNotation(MoveNotation moveNotation, String promotionType){
+        String type=promotionType!=null ? promotionType : moveNotation.getPromotionType();
+        if(type==null){
+            return "";
+        }
+        return "="+(type.equals("Knight") ? "N" : type.substring(0,1));
+    }
+
+    /**
+     * Stores the move in this player's archive (moves/001, moves/002, ...).
+     * The opponent's client is listening to this collection (see BoardGUI.listenForOpponentMoves).
+     */
+    private void saveMove(MoveNotation moveNotation){
+        DocumentReference gameDocument=FireBaseConnection.getDatabase()
+                .collection("accounts").document(boardGUI.getGame().getPlayer().getAccountId())
+                .collection("gameArchive").document(boardGUI.getGame().getPlayer().getId()+" ");
+        FireBaseConnection.logIfFails(gameDocument.update("numberOfMovesMade", boardGUI.getGame().getNumberOfMovesMade()), "saving the move count");
+        FireBaseConnection.logIfFails(gameDocument.collection("moves").document(boardGUI.getGame().toString()).set(moveNotation), "saving the move");
+    }
+
+    /** Plays a move that the opponent made on their computer. */
+    public void move(DocumentSnapshot documentSnapshot){
+        MoveNotation moveNotation=documentSnapshot.toObject(MoveNotation.class);
+        if(moveNotation==null){
+            return;
+        }
+        ArrayList<Piece> opponentPieces=boardGUI.getColorOfThePlayer().equals("B") ? whitePieces : blackPieces;
+        if(playMove(moveNotation, opponentPieces)){
+            boardGUI.getBoardButtonHandler().setWhoseTurnIsIt(boardGUI.getColorOfThePlayer());
+        }else{
+            System.err.println("Received a move that does not fit the board: "+documentSnapshot.getId());
         }
     }
-    private void promote(String promotionType, JButton buttonForNewPiece, Color colorForNewPiece, ArrayList<Piece> piecesForNewPiece){
-        switch (promotionType) {
-            case "Queen":
-                Piece queen = new Queen(buttonForNewPiece, colorForNewPiece);
-                piecesForNewPiece.add(queen);
-                if (colorForNewPiece.equals(Color.WHITE)) {
-                    buttonForNewPiece.setIcon(new ImageIcon("src/main/java/PieceIcons/White/white queen.png"));
-                    buttonForNewPiece.setDisabledIcon(buttonForNewPiece.getIcon());
-                } else {
-                    buttonForNewPiece.setIcon(new ImageIcon("src/main/java/PieceIcons/Black/black queen.png"));
-                    buttonForNewPiece.setDisabledIcon(buttonForNewPiece.getIcon());
-                }
-                break;
-            case "Bishop":
-                Piece bishop = new Bishop(buttonForNewPiece, colorForNewPiece);
-                piecesForNewPiece.add(bishop);
-                if (colorForNewPiece.equals(Color.WHITE)) {
-                    buttonForNewPiece.setIcon(new ImageIcon("src/main/java/PieceIcons/White/white bishop.png"));
-                    buttonForNewPiece.setDisabledIcon(buttonForNewPiece.getIcon());
-                } else {
-                    buttonForNewPiece.setIcon(new ImageIcon("src/main/java/PieceIcons/Black/black bishop.png"));
-                    buttonForNewPiece.setDisabledIcon(buttonForNewPiece.getIcon());
-                }
-                break;
-            case "Knight":
-                Piece knight = new Knight(buttonForNewPiece, colorForNewPiece);
-                piecesForNewPiece.add(knight);
-                if (colorForNewPiece.equals(Color.WHITE)) {
-                    buttonForNewPiece.setIcon(new ImageIcon("src/main/java/PieceIcons/White/white knight.png"));
-                    buttonForNewPiece.setDisabledIcon(buttonForNewPiece.getIcon());
-                } else {
-                    buttonForNewPiece.setIcon(new ImageIcon("src/main/java/PieceIcons/Black/black knight.png"));
-                    buttonForNewPiece.setDisabledIcon(buttonForNewPiece.getIcon());
-                }
-                break;
-            case "Rook":
-                Rook rook = new Rook(buttonForNewPiece, colorForNewPiece);
-                piecesForNewPiece.add(rook);
-                rook.increasehowmanytimesitmoved();
-                if (colorForNewPiece.equals(Color.WHITE)) {
-                    buttonForNewPiece.setIcon(new ImageIcon("src/main/java/PieceIcons/White/white rook.png"));
-                    buttonForNewPiece.setDisabledIcon(buttonForNewPiece.getIcon());
-                } else {
-                    buttonForNewPiece.setIcon(new ImageIcon("src/main/java/PieceIcons/Black/black rook.png"));
-                    buttonForNewPiece.setDisabledIcon(buttonForNewPiece.getIcon());
-                }
-                break;
+
+    /** Plays a stored move in a replay; it can be a move of either color. */
+    public boolean replayMove(MoveNotation moveNotation){
+        return playMove(moveNotation, whitePieces)||playMove(moveNotation, blackPieces);
+    }
+
+    private boolean playMove(MoveNotation moveNotation, ArrayList<Piece> pieces){
+        for(Piece piece: pieces){
+            Index indexOfButton=findIndex(piece.getButton());
+            if(indexOfButton!=null&&moveNotation.getFrom().getColumn()==indexOfButton.getColumn()&&moveNotation.getFrom().getRow()==indexOfButton.getRow()){
+                move(piece, boardButtons[moveNotation.getTo().getRow()][moveNotation.getTo().getColumn()], moveNotation.getPromotionType());
+                return true;
+            }
         }
+        return false;
+    }
+    private void promote(String promotionType, JButton buttonForNewPiece, Color colorForNewPiece, ArrayList<Piece> piecesForNewPiece){
+        piecesForNewPiece.add(createPromotedPiece(promotionType, buttonForNewPiece, colorForNewPiece));
+    }
+
+    /**
+     * Creates the piece a pawn is promoted to and puts its icon on the square.
+     * Used both for local promotions (PawnPromoteButtonHandler) and for
+     * promotions that arrive from the opponent through Firestore.
+     *
+     * @param promotionType "Queen", "Rook", "Bishop" or "Knight"
+     */
+    public static Piece createPromotedPiece(String promotionType, JButton buttonForNewPiece, Color colorForNewPiece){
+        Piece newPiece = switch (promotionType) {
+            case "Rook" -> {
+                Rook rook = new Rook(buttonForNewPiece, colorForNewPiece);
+                rook.increasehowmanytimesitmoved(); // a promoted rook can never castle
+                yield rook;
+            }
+            case "Bishop" -> new Bishop(buttonForNewPiece, colorForNewPiece);
+            case "Knight" -> new Knight(buttonForNewPiece, colorForNewPiece);
+            default -> new Queen(buttonForNewPiece, colorForNewPiece);
+        };
+        buttonForNewPiece.setIcon(IconLoader.forPiece(newPiece));
+        buttonForNewPiece.setDisabledIcon(buttonForNewPiece.getIcon());
+        return newPiece;
+    }
+
+    /** "x2" -> "x3" on the captured-pieces panel. */
+    private void increaseCount(JLabel countLabel){
+        int count=Integer.parseInt(countLabel.getText().substring(1));
+        countLabel.setText("x"+(count+1));
     }
 
     private int findSmallerOne(Index indexForCompare){

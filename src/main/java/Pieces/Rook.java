@@ -3,6 +3,7 @@ package Pieces;
 import javax.swing.*;
 import java.awt.*;
 
+/** Counts its moves because a rook that has moved can no longer castle. */
 public class Rook extends Piece{
     private int howmanytimesitmoved;
 

@@ -10,6 +10,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+/**
+ * Handles clicks on the board. The first click selects one of your pieces and shows
+ * its moves as green circles, a click on one of those squares makes the move.
+ * Clicking the selected piece again deselects it.
+ */
 public class BoardButtonHandler implements ActionListener {
     private final ChessModel model;
     private final ArrayList<Piece> whitePieces;

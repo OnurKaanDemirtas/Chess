@@ -1,17 +1,27 @@
 package GUI;
 
+import PieceIcons.IconLoader;
 import ActionListeners.BoardButtonHandler;
 import ActionListeners.SelectionListener;
 import Online.FireBaseConnection;
 import Online.Game;
 import Pieces.*;
 import Logic.*;
+import Online.GameResult;
 import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.ListenerRegistration;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
+/**
+ * The game window: the board in the middle, captured pieces on the left,
+ * clocks and the move list on the right. Clicking a move in the list shows
+ * the board as it was after that move (see SelectionListener).
+ */
 public class BoardGUI {
     private JFrame frame;
     private JPanel boardPanel;
@@ -45,6 +55,20 @@ public class BoardGUI {
     private String colorOfThePlayer;
     private Game game;
     private BoardButtonHandler boardButtonHandler;
+    private final boolean replay;
+    private Runnable onClose;
+    private ListenerRegistration opponentMovesListener;
+
+    public boolean isReplay() {
+        return replay;
+    }
+    public ChessModel getChessModel() {
+        return chessModel;
+    }
+    /** Code to run after the board window is closed (e.g. show the main page again). */
+    public void setOnClose(Runnable onClose) {
+        this.onClose = onClose;
+    }
 
     public BoardButtonHandler getBoardButtonHandler() {
         return boardButtonHandler;
@@ -78,6 +102,9 @@ public class BoardGUI {
     }
     public DefaultListModel<Move> getWhiteMovesListModel() {
         return whiteMovesListModel;
+    }
+    public JPanel getMovesPanel() {
+        return movesPanel;
     }
     public JPanel getInfoPanel() {
         return infoPanel;
@@ -135,9 +162,18 @@ public class BoardGUI {
     }
 
     public BoardGUI(String colorOfThePlayer, Game game){
+        this(colorOfThePlayer, game, false);
+    }
+
+    /**
+     * @param colorOfThePlayer "W" or "B": the side this client plays (the board is drawn from that side)
+     * @param replay true when an archived game is only being watched: no clocks, no clicks, no Firestore
+     */
+    public BoardGUI(String colorOfThePlayer, Game game, boolean replay){
         this.game=game;
+        this.replay=replay;
         this.colorOfThePlayer = colorOfThePlayer;
-        this.frame=new JFrame("Chess Game");
+        this.frame=new JFrame(replay ? "Replay - vs "+game.getOpponent().getPlayerName() : "Chess Game - vs "+game.getOpponent().getPlayerName());
         this.whitePieces =new ArrayList<>();
         this.blackPieces =new ArrayList<>();
         this.boardPanel=initiateBoardPanel();
@@ -160,12 +196,29 @@ public class BoardGUI {
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setLayout(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                close();
+            }
+        });
         frame.add(boardPanel);
         frame.add(movesPanel);
         frame.add(infoPanel);
         frame.setVisible(true);
-        FireBaseConnection.getDatabase()
+        if(!replay){
+            listenForOpponentMoves();
+        }
+    }
+
+    /**
+     * Every client writes every move of the game (its own and the opponent's) into its own
+     * "moves" collection. So when the opponent's collection has more moves than we have
+     * played so far, the newest one is the opponent's move and we play it on our board.
+     */
+    private void listenForOpponentMoves(){
+        opponentMovesListener=FireBaseConnection.getDatabase()
                 .collection("accounts")
                 .document(game.getOpponent().getAccountId())
                 .collection("gameArchive")
@@ -173,16 +226,40 @@ public class BoardGUI {
                 .collection("moves")
                 .addSnapshotListener((querySnapshot, error) -> {
                     if (error != null) {
+                        System.err.println("Lost connection to the opponent's moves: "+error.getMessage());
                         return;
                     }
-                    if (querySnapshot != null && !querySnapshot.isEmpty()&&querySnapshot.getDocuments().size()>game.getNumberOfMovesMade()) {
-                        DocumentSnapshot documentSnapshot=querySnapshot.getDocuments().getLast();
-                        chessModel.move(documentSnapshot);
-                    }
+                    // Firestore calls this on its own thread; Swing must only be touched on the EDT.
+                    SwingUtilities.invokeLater(() -> {
+                        if (querySnapshot != null && !querySnapshot.isEmpty()&&querySnapshot.getDocuments().size()>game.getNumberOfMovesMade()) {
+                            DocumentSnapshot documentSnapshot=querySnapshot.getDocuments().getLast();
+                            chessModel.move(documentSnapshot);
+                        }
+                    });
                 });
-
     }
-    public BoardGUI(){}
+
+    /** Called when the window is closed. Leaving a running game counts as resigning. */
+    public void close(){
+        if(!replay&&!game.isGameFinished()){
+            int answer=JOptionPane.showConfirmDialog(frame,
+                    "The game is still running. Leaving now counts as resigning.\nDo you want to resign?",
+                    "Resign?", JOptionPane.YES_NO_OPTION);
+            if(answer!=JOptionPane.YES_OPTION){
+                return;
+            }
+            GameResult.finishGame(this, GameResult.LOSS, "You resigned.");
+        }
+        stopClocks();
+        if(opponentMovesListener!=null){
+            opponentMovesListener.remove();
+        }
+        frame.dispose();
+        if(onClose!=null){
+            onClose.run();
+        }
+    }
+
     private JPanel initiateBoardPanel(){
         JPanel board=new JPanel();
         board.setLayout(new GridLayout(8,8));
@@ -193,25 +270,25 @@ public class BoardGUI {
         JPanel info=new JPanel();
         info.setBounds(0,0,100,800);
         info.setLayout(new GridLayout(10,2));
-        info.add(new JLabel(new ImageIcon("src/main/java/PieceIcons/White/white queen.png")));
+        info.add(new JLabel(IconLoader.get(Color.WHITE, "queen")));
         info.add(takenWhiteQueenCount =new JLabel("x0"));
-        info.add(new JLabel(new ImageIcon("src/main/java/PieceIcons/White/white rook.png")));
+        info.add(new JLabel(IconLoader.get(Color.WHITE, "rook")));
         info.add(takenWhiteRookCount=new JLabel("x0"));
-        info.add(new JLabel(new ImageIcon("src/main/java/PieceIcons/White/white bishop.png")));
+        info.add(new JLabel(IconLoader.get(Color.WHITE, "bishop")));
         info.add(takenWhiteBishopCount =new JLabel("x0"));
-        info.add(new JLabel(new ImageIcon("src/main/java/PieceIcons/White/white knight.png")));
+        info.add(new JLabel(IconLoader.get(Color.WHITE, "knight")));
         info.add(takenWhiteKnightCount =new JLabel("x0"));
-        info.add(new JLabel(new ImageIcon("src/main/java/PieceIcons/White/white pawn.png")));
+        info.add(new JLabel(IconLoader.get(Color.WHITE, "pawn")));
         info.add(takenWhitePawnCount =new JLabel("x0"));
-        info.add(new JLabel(new ImageIcon("src/main/java/PieceIcons/Black/black queen.png")));
+        info.add(new JLabel(IconLoader.get(Color.BLACK, "queen")));
         info.add(takenBlackQueenCount =new JLabel("x0"));
-        info.add(new JLabel(new ImageIcon("src/main/java/PieceIcons/Black/black rook.png")));
+        info.add(new JLabel(IconLoader.get(Color.BLACK, "rook")));
         info.add(takenBlackRookCount =new JLabel("x0"));
-        info.add(new JLabel(new ImageIcon("src/main/java/PieceIcons/Black/black bishop.png")));
+        info.add(new JLabel(IconLoader.get(Color.BLACK, "bishop")));
         info.add(takenBlackBishopCount =new JLabel("x0"));
-        info.add(new JLabel(new ImageIcon("src/main/java/PieceIcons/Black/black knight.png")));
+        info.add(new JLabel(IconLoader.get(Color.BLACK, "knight")));
         info.add(takenBlackKnightCount =new JLabel("x0"));
-        info.add(new JLabel(new ImageIcon("src/main/java/PieceIcons/Black/black pawn.png")));
+        info.add(new JLabel(IconLoader.get(Color.BLACK, "pawn")));
         info.add(takenBlackPawnCount =new JLabel("x0"));
         info.setBackground(Color.cyan);
         return info;
@@ -228,6 +305,7 @@ public class BoardGUI {
         moves.add(movesSplitPane);
         return moves;
     }
+    /** Creates the two clocks. White's clock starts right away (except in replays). */
     public void selectTimer(Tempo whitetempo, Tempo blacktempo){
         this.whitetempo=whitetempo;
         this.blacktempo=blacktempo;
@@ -239,270 +317,121 @@ public class BoardGUI {
         blackTimerLabel.setBounds(50,100,210,100);
         blackTimerLabel.setFont(new Font("Consolas",Font.BOLD,48));
         this.movesPanel.add(blackTimerLabel);
-        this.whitetimer=new Timer(1000,e->{
-            whitetempo.setRemainingTime(whitetempo.getRemainingTime()-1);
-            int minute=whitetempo.getRemainingTime()/60;
-            int second=whitetempo.getRemainingTime()-minute*60;
-            String m=minute+"";
-            String s=second+"";
-            if(minute<10){
-                m=0+""+minute;
-            }
-            if(second<10){
-                s=0+""+second;
-            }
-            whiteTimerLabel.setText(m+":"+s);
-            if(whitetempo.getRemainingTime()==0){
-                for(Piece piece: whitePieces){
-                    piece.getButton().setEnabled(false);
-                    if(piece instanceof King){
-                        piece.getButton().setBackground(Color.red);
-                    }
-                }
-                JOptionPane.showMessageDialog(null,"BlackWins");
-                whitetimer.stop();
-            }
-        });
-        this.blacktimer=new Timer(1000,e ->{
-            blacktempo.setRemainingTime(blacktempo.getRemainingTime()-1);
-            int minute=blacktempo.getRemainingTime()/60;
-            int second=blacktempo.getRemainingTime()-minute*60;
-            String m=minute+"";
-            String s=second+"";
-            if(minute<10){
-                m=0+""+minute;
-            }
-            if(second<10){
-                s=0+""+second;
-            }
-            blackTimerLabel.setText(m+":"+s);
-            if(blacktempo.getRemainingTime()==0){
-                for(Piece piece: blackPieces){
-                    piece.getButton().setEnabled(false);
-                    if(piece instanceof King){
-                        piece.getButton().setBackground(Color.red);
-                    }
-                }
-                JOptionPane.showMessageDialog(null,"WhiteWins");
-                blacktimer.stop();
-            }
-        });
-        int minute=blacktempo.getRemainingTime()/60;
-        String m=minute+"";
-        if(minute<10){
-            m=0+""+minute;
+        this.whitetimer=new Timer(1000,e->tick(whitetempo, whiteTimerLabel, "W"));
+        this.blacktimer=new Timer(1000,e->tick(blacktempo, blackTimerLabel, "B"));
+        whiteTimerLabel.setText(formatTime(whitetempo.getRemainingTime()));
+        blackTimerLabel.setText(formatTime(blacktempo.getRemainingTime()));
+        if(!replay){
+            whitetimer.start();
         }
-        blackTimerLabel.setText(m+":"+'0'+'0');
-        whiteTimerLabel.setText(m+":"+'0'+'0');
-        whitetimer.start();
     }
+
+    /** One second passed on the clock of the given side. */
+    private void tick(Tempo tempo, JLabel label, String side){
+        tempo.setRemainingTime(tempo.getRemainingTime()-1);
+        label.setText(formatTime(tempo.getRemainingTime()));
+        if(tempo.getRemainingTime()<=0){
+            ArrayList<Piece> losingPieces=side.equals("W") ? whitePieces : blackPieces;
+            for(Piece piece: losingPieces){
+                if(piece instanceof King){
+                    piece.getButton().setBackground(Color.red);
+                }
+            }
+            String message=(side.equals("W") ? "Black" : "White")+" wins on time!";
+            GameResult.finishGame(this, side.equals(colorOfThePlayer) ? GameResult.LOSS : GameResult.WIN, message);
+        }
+    }
+
+    /**
+     * Called after a move: adds the increment to the side that just moved
+     * and hands the clock over to the other side.
+     */
+    public void switchClock(boolean whiteJustMoved){
+        if(replay||whitetempo==null){
+            return;
+        }
+        Tempo tempo=whiteJustMoved ? whitetempo : blacktempo;
+        tempo.setRemainingTime(tempo.getRemainingTime()+tempo.getTimeToAddedForEachMove());
+        (whiteJustMoved ? whiteTimerLabel : blackTimerLabel).setText(formatTime(tempo.getRemainingTime()));
+        (whiteJustMoved ? whitetimer : blacktimer).stop();
+        if(!game.isGameFinished()){
+            (whiteJustMoved ? blacktimer : whitetimer).start();
+        }
+    }
+
+    public void stopClocks(){
+        if(whitetimer!=null){
+            whitetimer.stop();
+        }
+        if(blacktimer!=null){
+            blacktimer.stop();
+        }
+    }
+
+    /** 125 -> "02:05" */
+    public static String formatTime(int seconds){
+        seconds=Math.max(seconds,0);
+        return String.format("%02d:%02d", seconds/60, seconds%60);
+    }
+
+    /**
+     * Creates the 64 squares and puts the pieces on their starting squares.
+     * The board is drawn from the player's side (black sees it flipped), but
+     * buttonList is always stored from white's point of view: index = row*8+column,
+     * where row 0 is the 8th rank. ChessModel relies on that order.
+     */
     private void addButtonsToBoard(String color){
         this.buttonList=new ArrayList<>();
-        if(color.equals("W")){
-            for(int row=0;row<8;row++){
-                for(int column=0;column<8;column++){
-                    JButton button=new JButton();
-                    button.setBounds(column*80,row*80,80,80);
-                    if((row+column)%2==0){
-                        button.setBackground(Color.WHITE);
-                    }else{
-                        button.setBackground(Color.LIGHT_GRAY);
-                    }
-                    if((row==7&&column==1)||(row==7&&column==6)){
-                        Piece knight =new Knight(button,Color.WHITE);
-                        whitePieces.add(knight);
-                        button.setEnabled(true);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white knight.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    }else if((row==7&&column==2)||(row==7&&column==5)){
-                        Piece bishop=new Bishop(button,Color.WHITE);
-                        whitePieces.add(bishop);
-                        button.setEnabled(true);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white bishop.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    }else if((row==7&&column==0)||(row==7&&column==7)){
-                        Piece rook=new Rook(button,Color.WHITE);
-                        whitePieces.add(rook);
-                        button.setEnabled(true);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white rook.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    }else if(row==7&&column==3){
-                        Piece queen=new Queen(button,Color.WHITE);
-                        whitePieces.add(queen);
-                        button.setEnabled(true);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white queen.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    }else if(column==4&&row==7){
-                        Piece king=new King(button,Color.WHITE);
-                        whitePieces.add(king);
-                        button.setEnabled(true);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white king.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    }else if((row==0&&column==1)||(row==0&&column==6)){
-                        Piece knight =new Knight(button,Color.BLACK);
-                        blackPieces.add(knight);
-                        button.setEnabled(false);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black knight.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    }else if((row==0&&column==2)||(row==0&&column==5)){
-                        Piece bishop=new Bishop(button,Color.BLACK);
-                        blackPieces.add(bishop);
-                        button.setEnabled(false);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black bishop.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    }else if((row==0&&column==0)||(row==0&&column==7)){
-                        Piece rook=new Rook(button,Color.BLACK);
-                        blackPieces.add(rook);
-                        button.setEnabled(false);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black rook.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    }else if(row==0&&column==3){
-                        Piece queen=new Queen(button,Color.BLACK);
-                        blackPieces.add(queen);
-                        button.setEnabled(false);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black queen.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    }else if(column==4&&row==0){
-                        Piece king=new King(button,Color.BLACK);
-                        blackPieces.add(king);
-                        button.setEnabled(false);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black king.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    } else if (row==1) {
-                        Piece pawn=new Pawn(button,Color.BLACK);
-                        blackPieces.add(pawn);
-                        button.setEnabled(false);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black pawn.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    } else if (row==6) {
-                        Piece pawn=new Pawn(button,Color.WHITE);
-                        whitePieces.add(pawn);
-                        button.setEnabled(true);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white pawn.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    } else {
-                        button.setEnabled(false);
-                    }
-                    button.setDisabledIcon(button.getIcon());
-                    boardPanel.add(button);
-                    buttonList.add(button);
-                }
+        boolean isWhitePlayer=color.equals("W");
+        for(int i=0;i<64;i++){
+            int row=isWhitePlayer ? i/8 : 7-i/8;
+            int column=isWhitePlayer ? i%8 : 7-i%8;
+            JButton button=new JButton();
+            button.setBackground((row+column)%2==0 ? Color.WHITE : Color.LIGHT_GRAY);
+            makeSquare(button);
+            Piece piece=createStartingPiece(row,column,button);
+            if(piece!=null){
+                (piece.getColor().equals(Color.WHITE) ? whitePieces : blackPieces).add(piece);
+                button.setIcon(IconLoader.forPiece(piece));
+                // only the player's own pieces are clickable
+                button.setEnabled(piece.getColor().equals(isWhitePlayer ? Color.WHITE : Color.BLACK));
+            }else{
+                button.setEnabled(false);
             }
-        }else if(color.equals("B")){
-            for(int row=7;row>=0;row--) {
-                for (int column = 7; column >= 0; column--) {
-                    JButton button = new JButton();
-                    button.setBounds((7 - column) * 80, (7 - row) * 80, 80, 80);
-                    if ((row + column) % 2 == 0) {
-                        button.setBackground(Color.WHITE);
-                    } else {
-                        button.setBackground(Color.LIGHT_GRAY);
-                    }
-                    if((row==7&&column==1)||(row==7&&column==6)){
-                        Piece knight =new Knight(button,Color.WHITE);
-                        whitePieces.add(knight);
-                        button.setEnabled(false);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white knight.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    }else if((row==7&&column==2)||(row==7&&column==5)){
-                        Piece bishop=new Bishop(button,Color.WHITE);
-                        whitePieces.add(bishop);
-                        button.setEnabled(false);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white bishop.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    }else if((row==7&&column==0)||(row==7&&column==7)){
-                        Piece rook=new Rook(button,Color.WHITE);
-                        whitePieces.add(rook);
-                        button.setEnabled(false);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white rook.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    }else if(row==7&&column==3){
-                        Piece queen=new Queen(button,Color.WHITE);
-                        whitePieces.add(queen);
-                        button.setEnabled(false);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white queen.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    }else if(column==4&&row==7){
-                        Piece king=new King(button,Color.WHITE);
-                        whitePieces.add(king);
-                        button.setEnabled(false);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white king.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    }else if((row==0&&column==1)||(row==0&&column==6)){
-                        Piece knight =new Knight(button,Color.BLACK);
-                        blackPieces.add(knight);
-                        button.setEnabled(true);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black knight.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    }else if((row==0&&column==2)||(row==0&&column==5)){
-                        Piece bishop=new Bishop(button,Color.BLACK);
-                        blackPieces.add(bishop);
-                        button.setEnabled(true);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black bishop.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    }else if((row==0&&column==0)||(row==0&&column==7)){
-                        Piece rook=new Rook(button,Color.BLACK);
-                        blackPieces.add(rook);
-                        button.setEnabled(true);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black rook.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    }else if(row==0&&column==3){
-                        Piece queen=new Queen(button,Color.BLACK);
-                        blackPieces.add(queen);
-                        button.setEnabled(true);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black queen.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    }else if(column==4&&row==0){
-                        Piece king=new King(button,Color.BLACK);
-                        blackPieces.add(king);
-                        button.setEnabled(true);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black king.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    } else if (row==1) {
-                        Piece pawn=new Pawn(button,Color.BLACK);
-                        blackPieces.add(pawn);
-                        button.setEnabled(true);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/Black/black pawn.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    } else if (row==6) {
-                        Piece pawn=new Pawn(button,Color.WHITE);
-                        whitePieces.add(pawn);
-                        button.setEnabled(false);
-                        ImageIcon imageIcon=new ImageIcon("src/main/java/PieceIcons/White/white pawn.png");
-                        button.setIcon(imageIcon);
-                        button.setText("");
-                    } else {
-                        button.setEnabled(false);
-                    }
-                    button.setDisabledIcon(button.getIcon());
-                    boardPanel.add(button);
-                    buttonList.addFirst(button);
-                }
+            button.setDisabledIcon(button.getIcon());
+            boardPanel.add(button);
+            if(isWhitePlayer){
+                buttonList.add(button);
+            }else{
+                buttonList.addFirst(button);
             }
         }
+    }
+    /**
+     * Makes a button look like a board square. Without this the macOS look-and-feel
+     * ignores the background color and every square looks the same.
+     */
+    public static void makeSquare(JButton button){
+        button.setOpaque(true);
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+    }
+    /** Returns the piece that starts on the given square, or null for an empty square. */
+    private Piece createStartingPiece(int row, int column, JButton button){
+        Color color=row<=1 ? Color.BLACK : Color.WHITE;
+        if(row==1||row==6){
+            return new Pawn(button,color);
+        }
+        if(row!=0&&row!=7){
+            return null;
+        }
+        return switch(column){
+            case 0,7 -> new Rook(button,color);
+            case 1,6 -> new Knight(button,color);
+            case 2,5 -> new Bishop(button,color);
+            case 3 -> new Queen(button,color);
+            default -> new King(button,color);
+        };
     }
     public void addActionListeners(){
         this.boardButtonHandler = new BoardButtonHandler(chessModel, this);

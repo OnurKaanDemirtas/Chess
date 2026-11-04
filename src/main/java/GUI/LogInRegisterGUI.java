@@ -6,12 +6,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+/** The first window: log in or open the "create new account" dialog. */
 public class LogInRegisterGUI extends JFrame {
     private Firestore database;
     private JButton createNewAccountButton;
     private JButton logInButton;
     private JTextField usernameTextField;
-    private JTextField passwordTextField;
+    private JPasswordField passwordTextField;
 
     public Firestore getDatabase() {
         return database;
@@ -29,7 +30,7 @@ public class LogInRegisterGUI extends JFrame {
         return usernameTextField;
     }
 
-    public JTextField getPasswordTextField() {
+    public JPasswordField getPasswordTextField() {
         return passwordTextField;
     }
 
@@ -38,12 +39,12 @@ public class LogInRegisterGUI extends JFrame {
         setSize(400,400);
         setLayout(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setTitle("Register");
+        setTitle("Chess - Log in");
         JPanel registerPanel=new JPanel();
         registerPanel.setLayout(new GridLayout(2,2,10,5));
         registerPanel.setBounds(20,20,360,180);
         this.usernameTextField=new JTextField();
-        this.passwordTextField=new JTextField();
+        this.passwordTextField=new JPasswordField();
         this.logInButton =new JButton("Log in");
         this.createNewAccountButton=new JButton("Create New Account");
         registerPanel.add(new JLabel("Username:"));
@@ -55,6 +56,7 @@ public class LogInRegisterGUI extends JFrame {
         createNewAccountButton.setBounds(20,285,360,85);
         add(createNewAccountButton);
         add(registerPanel);
+        getRootPane().setDefaultButton(logInButton); // Enter logs in
         setLocationRelativeTo(null);
         setVisible(true);
     }

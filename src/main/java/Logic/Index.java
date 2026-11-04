@@ -1,6 +1,7 @@
 package Logic;
 
 
+/** A square on the board: row 0 is the 8th rank, column 0 is the a-file. */
 public class Index {
     private int row;
     private int column;
